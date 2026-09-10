@@ -1,0 +1,24 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cyberGrad" x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00F0FF" />
+      <stop offset="50%" stop-color="#7928CA" />
+      <stop offset="100%" stop-color="#C7FF4A" />
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#C7FF4A" stop-opacity="0.1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background Shield -->
+  <rect width="48" height="48" rx="10" fill="#07080E" />
+  <rect x="1" y="1" width="46" height="46" rx="9" stroke="url(#glowGrad)" stroke-width="1.5" />
+
+  <!-- Cyber Angular N Monogram -->
+  <path d="M14 36V12L34 36V12" stroke="url(#cyberGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Quantum Neural Beacon -->
+  <circle cx="34" cy="12" r="3" fill="#C7FF4A" />
+  <circle cx="14" cy="36" r="2.5" fill="#00F0FF" />
+</svg>

@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  --color-base: #07070B;
+  --color-secondary: #0A0B10;
+  --color-surface: #10121A;
+  --color-elevated: #151824;
+  --color-primary-text: #F2F0EA;
+  --color-secondary-text: #8E8E8E;
+  --color-tertiary-text: #555555;
+  --color-accent: #00F0FF;
+  --color-accent-lime: #C7FF4A;
+  --color-accent-magenta: #FF007F;
+  --color-accent-amber: #FFB703;
+}
+
+:root,
+[data-theme="lime"] {
+  --background: #07070B;
+  --foreground: #F2F0EA;
+  --theme-accent: #C7FF4A;
+  --theme-accent-glow: rgba(199, 255, 74, 0.45);
+  --theme-accent-dim: rgba(199, 255, 74, 0.12);
+}
+
+[data-theme="cyberpunk"] {
+  --theme-accent: #00F0FF;
+  --theme-accent-glow: rgba(0, 240, 255, 0.45);
+  --theme-accent-dim: rgba(0, 240, 255, 0.12);
+}
+
+[data-theme="solar"] {
+  --theme-accent: #FFB703;
+  --theme-accent-glow: rgba(255, 183, 3, 0.45);
+  --theme-accent-dim: rgba(255, 183, 3, 0.12);
+}
+
+[data-theme="violet"] {
+  --theme-accent: #A855F7;
+  --theme-accent-glow: rgba(168, 85, 247, 0.45);
+  --theme-accent-dim: rgba(168, 85, 247, 0.12);
+}
+
+html {
+  background-color: #07070B;
+  color: #F2F0EA;
+  color-scheme: dark;
+  scroll-behavior: auto;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #07070B;
+  color: #F2F0EA;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Custom Colorful Text Selection */
+::selection {
+  background-color: #00F0FF;
+  color: #07070B;
+}
+
+/* Modern Colorful Minimal Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #07070B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1A1D2B;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00F0FF;
+}
+
+/* Desktop fine pointer */
+@media (pointer: fine) {
+  a, button, input, [role="button"] {
+    cursor: pointer;
+  }
+}
+
+/* Accessibility: Strict Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
