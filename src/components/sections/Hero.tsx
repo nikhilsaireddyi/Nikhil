@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { createTimeline, remove } from 'animejs';
 import { siteConfig } from '@/data/site';
@@ -22,6 +22,9 @@ import {
   playApertureClick,
   playSynapticPulse,
 } from '@/lib/sound';
+import { CyberScramble } from '@/components/ui/CyberScramble';
+import { RoleCycler } from '@/components/ui/RoleCycler';
+import { TechGlossaryTooltip } from '@/components/ui/TechGlossaryTooltip';
 
 
 const TECH_BADGES = [
@@ -33,48 +36,7 @@ const TECH_BADGES = [
   { name: 'Tailwind CSS', color: '#2DD4BF', border: 'border-[#2DD4BF]/40', bg: 'bg-[#2DD4BF]/10' },
 ];
 
-const GLYPHS = '01ΞΔλ∫0x8FØ§ΨΩ<>/*#$[]{}%@!~';
 
-function ScrambleText({ text, className }: { text: string; className?: string }) {
-  const [displayText, setDisplayText] = useState(text);
-  const isScrambling = useRef(false);
-
-  const scramble = useCallback(() => {
-    if (isScrambling.current) return;
-    isScrambling.current = true;
-    let iteration = 0;
-    const interval = setInterval(() => {
-      setDisplayText(
-        text
-          .split('')
-          .map((char, index) => {
-            if (char === ' ') return ' ';
-            if (index < iteration) {
-              return text[index];
-            }
-            return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
-          })
-          .join('')
-      );
-
-      if (iteration >= text.length) {
-        clearInterval(interval);
-        isScrambling.current = false;
-        setDisplayText(text);
-      }
-      iteration += 1 / 2;
-    }, 25);
-  }, [text]);
-
-  return (
-    <span
-      onMouseEnter={scramble}
-      className={`cursor-default transition-colors duration-200 ${className || ''}`}
-    >
-      {displayText}
-    </span>
-  );
-}
 
 export function Hero() {
   const containerRef = useRef<HTMLElement>(null);
@@ -280,9 +242,7 @@ export function Hero() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-[#00F0FF] font-bold">AI/ML DEVELOPER</span>
-            <span className="text-[#555555]">{'//'}</span>
-            <span className="text-[#FF007F] font-bold">FRONTEND ENGINEER</span>
+            <RoleCycler prefix="STATUS:" className="text-[10px] sm:text-xs" />
           </div>
         </div>
 
@@ -295,7 +255,7 @@ export function Hero() {
                 ref={title1Ref}
                 className="text-6xl sm:text-8xl md:text-[10.5vw] font-sans font-black tracking-[-0.04em] text-[#F2F0EA] leading-[0.88] uppercase opacity-0"
               >
-                <ScrambleText text="NIKHIL" />
+                <CyberScramble text="NIKHIL" />
               </h1>
             </div>
 
@@ -304,33 +264,41 @@ export function Hero() {
                 ref={title2Ref}
                 className="text-6xl sm:text-8xl md:text-[10.5vw] font-sans font-black tracking-[-0.04em] text-[#F2F0EA] leading-[0.88] uppercase opacity-0 flex items-baseline gap-3"
               >
-                <span className="bg-gradient-to-r from-[#F2F0EA] via-[#F2F0EA] to-[#00F0FF] bg-clip-text text-transparent">
-                  <ScrambleText text="SAI REDDY" />
+                <span className="bg-gradient-to-r from-[#F2F0EA] via-[#F2F0EA] to-[#00F0FF] hover:to-[#FF007F] bg-clip-text text-transparent transition-all duration-500">
+                  <CyberScramble text="SAI REDDY" />
                 </span>
-                <span className="inline-block w-3 h-3 sm:w-5 sm:h-5 md:w-7 md:h-7 bg-gradient-to-tr from-[#00F0FF] via-[#7928CA] to-[#FF007F] rounded-xs mb-1 shadow-[0_0_15px_#00F0FF]" />
+                <span className="inline-block w-3 h-3 sm:w-5 sm:h-5 md:w-7 md:h-7 bg-gradient-to-tr from-[#00F0FF] via-[#7928CA] to-[#FF007F] rounded-xs mb-1 shadow-[0_0_15px_#00F0FF] animate-pulse" />
               </h1>
             </div>
 
             {/* Supporting Statement */}
             <div ref={statementRef} className="mt-8 sm:mt-10 max-w-2xl opacity-0">
+              <div className="mb-3">
+                <RoleCycler
+                  className="text-xs sm:text-sm md:text-base font-bold"
+                  prefix="TRAJECTORY //"
+                />
+              </div>
+
               <p className="text-base sm:text-lg md:text-xl font-sans font-light text-[#8E8E8E] leading-relaxed">
                 {siteConfig.tagline}
               </p>
 
-              {/* Colorful Vibrant Tech Stack Badges */}
+              {/* Colorful Vibrant Tech Stack Badges with Interactive Glossary */}
               <div className="mt-6 flex flex-wrap items-center gap-2">
                 <div className="flex items-center gap-1 text-[11px] font-mono text-[#8E8E8E] mr-2">
                   <Terminal size={13} className="text-[#00F0FF]" />
                   <span>CORE:</span>
                 </div>
                 {TECH_BADGES.map((tech) => (
-                  <span
-                    key={tech.name}
-                    className={`px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wide border ${tech.border} ${tech.bg} transition-all hover:scale-105 shadow-sm`}
-                    style={{ color: tech.color }}
-                  >
-                    {tech.name}
-                  </span>
+                  <TechGlossaryTooltip key={tech.name} termKey={tech.name}>
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wide border ${tech.border} ${tech.bg} transition-all hover:scale-105 shadow-sm`}
+                      style={{ color: tech.color }}
+                    >
+                      {tech.name}
+                    </span>
+                  </TechGlossaryTooltip>
                 ))}
               </div>
 

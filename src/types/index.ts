@@ -62,7 +62,7 @@ export interface JourneyItem {
   readonly isCurrent: boolean;
 }
 
-export type ProjectStatus = 'pending' | 'reserved' | 'exploring';
+export type ProjectStatus = 'pending' | 'reserved' | 'exploring' | 'deployed' | 'active' | 'online';
 
 export interface Project {
   readonly id: string;

@@ -87,6 +87,9 @@ export function CyberCommandPalette() {
             <div className="text-[#00F0FF] font-bold">AVAILABLE SYSTEM DIRECTIVES:</div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
               <div><span className="text-[#C7FF4A] font-bold">help</span> — List directives</div>
+              <div><span className="text-[#C7FF4A] font-bold">story</span> — Nikhil&apos;s origin & engineering journey</div>
+              <div><span className="text-[#C7FF4A] font-bold">philosophy</span> — Core thesis on AI + Interfaces</div>
+              <div><span className="text-[#C7FF4A] font-bold">glossary</span> — AI/ML & frontend spec dictionary</div>
               <div><span className="text-[#C7FF4A] font-bold">about</span> — Academic background & bio</div>
               <div><span className="text-[#C7FF4A] font-bold">skills</span> — Neural & frontend stack</div>
               <div><span className="text-[#C7FF4A] font-bold">projects</span> — Flagship system deployments</div>
@@ -96,6 +99,66 @@ export function CyberCommandPalette() {
               <div><span className="text-[#C7FF4A] font-bold">sudo hire-nikhil</span> — Trigger priority talent acquisition</div>
               <div><span className="text-[#C7FF4A] font-bold">clear</span> — Wipe terminal display buffer</div>
               <div><span className="text-[#C7FF4A] font-bold">exit</span> — Close cyber terminal shell</div>
+            </div>
+          </div>
+        );
+        break;
+
+      case 'story':
+        output = (
+          <div className="space-y-2 text-xs text-[#8E8E8E] bg-[#0B0D15] p-3.5 rounded-lg border border-[rgba(242,240,234,0.1)]">
+            <div className="text-[#00F0FF] font-bold flex items-center gap-2">
+              <Cpu size={14} />
+              <span>ORIGIN STORY // NIKHIL SAI REDDY</span>
+            </div>
+            <p className="text-[#F2F0EA] leading-relaxed">
+              Growing up in Vizag, India, my fascination with computational engineering began with a core obsession:
+              how can cold mathematical algorithms become living, responsive interfaces that people can intuitively feel?
+            </p>
+            <p className="leading-relaxed">
+              Currently pursuing Computer Science Engineering (AI/ML) at Nxt Wave, I build at the frontier of two worlds:
+              deriving neural network loss surfaces from first principles and sculpting ultra-fluid 60 FPS web architectures
+              with Next.js, TypeScript, and kinetic physics.
+            </p>
+            <div className="text-[#C7FF4A] pt-1">
+              MISSION: Build intelligent computing systems with zero compromise on craft or performance.
+            </div>
+          </div>
+        );
+        break;
+
+      case 'philosophy':
+        output = (
+          <div className="space-y-2 text-xs text-[#8E8E8E] bg-[#0B0D15] p-3.5 rounded-lg border border-[#C7FF4A]/30">
+            <div className="text-[#C7FF4A] font-bold">CORE PHILOSOPHY // INTELLIGENCE + INTERFACE</div>
+            <p className="text-[#F2F0EA] leading-relaxed">
+              1. Intelligence without an expressive interface is trapped potential.
+            </p>
+            <p className="text-[#F2F0EA] leading-relaxed">
+              2. An interface without intelligence is an empty shell.
+            </p>
+            <p className="text-[#8E8E8E] leading-relaxed">
+              True breakthrough computing systems live at the exact convergence: high-dimensional neural weights orchestrated
+              through intuitive, tactile, sub-16ms latency digital cockpits.
+            </p>
+          </div>
+        );
+        break;
+
+      case 'glossary':
+        output = (
+          <div className="space-y-2 text-xs text-[#8E8E8E] bg-[#0B0D15] p-3.5 rounded-lg border border-[#00F0FF]/30">
+            <div className="text-[#00F0FF] font-bold">SYS // TECHNICAL GLOSSARY INDEX:</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+              <div><span className="text-[#C7FF4A] font-bold">Softmax</span> — Normalized probability distribution across classes</div>
+              <div><span className="text-[#C7FF4A] font-bold">AdamW</span> — Adaptive moment estimation with decoupled weight decay</div>
+              <div><span className="text-[#C7FF4A] font-bold">Backprop</span> — Reverse-mode automatic differentiation via chain rule</div>
+              <div><span className="text-[#C7FF4A] font-bold">A* Search</span> — Heuristic graph search for minimal-cost paths</div>
+              <div><span className="text-[#C7FF4A] font-bold">Next.js 16</span> — Turbopack-powered React full-stack architecture</div>
+              <div><span className="text-[#C7FF4A] font-bold">Anime.js</span> — JavaScript spring physics & kinetic typography</div>
+            </div>
+            <div className="text-[10px] text-[#00F0FF] mt-1 pt-1 border-t border-white/10 italic">
+              Tip: Hover over underlined keywords across the portfolio for interactive formulas & specs!
             </div>
           </div>
         );
@@ -345,6 +408,9 @@ export function CyberCommandPalette() {
               <span className="text-[#666] mr-1">QUICK RUN:</span>
               {[
                 'help',
+                'story',
+                'philosophy',
+                'glossary',
                 'cat resume.md',
                 'sudo hire-nikhil',
                 'vehicle supra',

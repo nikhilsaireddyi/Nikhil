@@ -5,6 +5,8 @@ import { siteConfig } from '@/data/site';
 import { GraduationCap, Compass, Layers, Binary } from 'lucide-react';
 import { GitHubActivityHeatmap } from '@/components/ui/GitHubActivityHeatmap';
 import { GeospatialNode } from '@/components/ui/GeospatialNode';
+import { TechGlossaryTooltip } from '@/components/ui/TechGlossaryTooltip';
+import { CyberScramble } from '@/components/ui/CyberScramble';
 
 export function About() {
   return (
@@ -69,28 +71,29 @@ export function About() {
             </div>
           </div>
 
-          {/* Right Column: Editorial Narrative */}
+          {/* Right Column: Editorial Narrative with Interactive Reading Spotlight */}
           <div className="lg:col-span-7 flex flex-col justify-between space-y-8 text-[#8E8E8E] leading-relaxed">
-            <p className="text-lg sm:text-xl md:text-2xl font-sans font-normal text-[#F2F0EA] leading-snug">
-              I am an undergraduate student in Vizag, dedicating my academic and creative focus to
-              Computer Science Engineering with a specialization in Artificial Intelligence and
-              Machine Learning.
+            <p className="text-lg sm:text-xl md:text-2xl font-sans font-normal text-[#F2F0EA] leading-snug p-4 rounded-xl border border-transparent hover:border-[#00F0FF]/30 hover:bg-[#00F0FF]/5 transition-all duration-300">
+              I am an undergraduate student in Vizag, dedicating my academic and creative focus to{' '}
+              <span className="text-[#00F0FF] font-medium">Computer Science Engineering</span> with a specialization in{' '}
+              <span className="text-[#C7FF4A] font-medium">Artificial Intelligence and Machine Learning</span>.
             </p>
 
             <div className="space-y-6 text-sm sm:text-base font-sans font-light">
-              <p>
+              <p className="p-4 rounded-xl border border-transparent hover:border-white/20 hover:bg-white/[0.02] hover:text-[#F2F0EA] transition-all duration-300">
                 My trajectory is shaped by curiosity. Rather than viewing technology as isolated tools,
                 I approach code as a computational medium where mathematics, logic, and human interface
                 design converge.
               </p>
 
-              <p>
-                In the frontend domain, I architect responsive interfaces using Next.js, React, and
-                strict TypeScript, pairing structural rigor with intentional kinetic motion through
-                Anime.js and Lenis smooth scrolling.
+              <p className="p-4 rounded-xl border border-transparent hover:border-white/20 hover:bg-white/[0.02] hover:text-[#F2F0EA] transition-all duration-300">
+                In the frontend domain, I architect responsive interfaces using{' '}
+                <TechGlossaryTooltip termKey="Next.js 16" className="text-white font-medium">Next.js 16</TechGlossaryTooltip>, React, and{' '}
+                <TechGlossaryTooltip termKey="TypeScript" className="text-white font-medium">strict TypeScript</TechGlossaryTooltip>, pairing structural rigor with intentional kinetic motion through{' '}
+                <TechGlossaryTooltip termKey="Anime.js" className="text-white font-medium">Anime.js</TechGlossaryTooltip> and Lenis smooth scrolling.
               </p>
 
-              <p>
+              <p className="p-4 rounded-xl border border-transparent hover:border-white/20 hover:bg-white/[0.02] hover:text-[#F2F0EA] transition-all duration-300">
                 As an aspiring AI engineer, my long-term ambition is to develop intelligent systems from
                 first principles, simultaneously building the expressive, high-performance interfaces
                 necessary for people to explore and orchestrate them.
@@ -99,7 +102,7 @@ export function About() {
 
             <div className="pt-6 border-t border-[rgba(242,240,234,0.08)] flex items-center gap-4 text-xs font-mono text-[#8E8E8E]">
               <Compass size={14} className="text-[#C7FF4A]" />
-              <span>CORE DISCIPLINE: CONTINUOUS EXPERIMENTATION & DEEP LEARNING</span>
+              <CyberScramble text="CORE DISCIPLINE: CONTINUOUS EXPERIMENTATION & DEEP LEARNING" triggerOnScroll={true} />
             </div>
           </div>
         </div>

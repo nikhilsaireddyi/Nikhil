@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { animate, stagger } from 'animejs';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Terminal } from 'lucide-react';
+import { CyberScramble } from '@/components/ui/CyberScramble';
+import { playHoverTick } from '@/lib/sound';
 
 export function Manifesto() {
   const containerRef = useRef<HTMLElement>(null);
@@ -53,7 +55,7 @@ export function Manifesto() {
         <div className="mb-8 sm:mb-12 flex items-center justify-between">
           <div className="flex items-center gap-2.5 text-xs font-mono tracking-[0.25em] text-[#C7FF4A]">
             <Terminal size={14} />
-            <span>MANIFESTO // 00</span>
+            <CyberScramble text="MANIFESTO // 00" triggerOnScroll={true} />
           </div>
 
           <div className="text-[10px] sm:text-xs font-mono tracking-[0.2em] text-[#8E8E8E]">
@@ -67,12 +69,13 @@ export function Manifesto() {
             {statement.split(' ').map((word, index) => (
               <span
                 key={index}
-                className={`manifesto-word inline-block ${
+                onMouseEnter={playHoverTick}
+                className={`manifesto-word inline-block transition-transform duration-200 hover:-translate-y-1 ${
                   reducedMotion ? 'opacity-100' : 'opacity-15'
                 } ${
                   word === 'INTELLIGENT' || word === 'SYSTEMS' || word === 'EXPERIENCE'
-                    ? 'text-[#F2F0EA] border-b-2 border-[#C7FF4A]/40 pb-0.5'
-                    : 'text-[#8E8E8E]'
+                    ? 'text-[#F2F0EA] border-b-2 border-[#C7FF4A]/40 pb-0.5 hover:text-[#00F0FF]'
+                    : 'text-[#8E8E8E] hover:text-[#F2F0EA]'
                 }`}
               >
                 {word}
@@ -84,15 +87,23 @@ export function Manifesto() {
         {/* Conceptual Hierarchy Flow */}
         <div className="mt-16 sm:mt-24 pt-8 border-t border-[rgba(242,240,234,0.08)] flex flex-wrap items-center justify-between gap-6 text-[10px] sm:text-xs font-mono tracking-[0.2em] text-[#8E8E8E]">
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[#F2F0EA]">
-            <span>HUMAN</span>
-            <span className="text-[#C7FF4A]">↓</span>
-            <span>CURIOSITY</span>
-            <span className="text-[#C7FF4A]">↓</span>
-            <span>CODE</span>
-            <span className="text-[#C7FF4A]">↓</span>
-            <span>INTELLIGENCE</span>
-            <span className="text-[#C7FF4A]">↓</span>
-            <span className="text-[#C7FF4A] font-bold">AI ENGINEER</span>
+            {['HUMAN', 'CURIOSITY', 'CODE', 'INTELLIGENCE'].map((step) => (
+              <React.Fragment key={step}>
+                <span
+                  onMouseEnter={playHoverTick}
+                  className="px-2 py-0.5 rounded border border-white/10 bg-white/5 hover:border-[#00F0FF]/50 hover:text-[#00F0FF] transition-all cursor-default"
+                >
+                  {step}
+                </span>
+                <span className="text-[#C7FF4A] animate-pulse">↓</span>
+              </React.Fragment>
+            ))}
+            <span
+              onMouseEnter={playHoverTick}
+              className="px-2.5 py-0.5 rounded border border-[#C7FF4A]/50 bg-[#C7FF4A]/10 text-[#C7FF4A] font-bold shadow-[0_0_10px_rgba(199,255,74,0.2)] cursor-default"
+            >
+              <CyberScramble text="AI ENGINEER" />
+            </span>
           </div>
 
           <div className="text-[#555555]">

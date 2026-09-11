@@ -13,6 +13,7 @@ import { socialLinks } from '@/data/socials';
 import { ResumeModal } from '@/components/ui/ResumeModal';
 import { ThemeSwitcher } from '@/components/ui/ThemeSwitcher';
 import { CyberCommandPalette, openCyberShell } from '@/components/ui/CyberCommandPalette';
+import { CyberScramble } from '@/components/ui/CyberScramble';
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
@@ -88,7 +89,7 @@ export function Navigation() {
               className="group flex flex-col focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C7FF4A]"
             >
               <span className="text-sm sm:text-base font-sans font-bold tracking-tight text-[#F2F0EA] uppercase group-hover:text-[#C7FF4A] transition-colors duration-200">
-                {siteConfig.name}
+                <CyberScramble text={siteConfig.name} scrambleOnHover={true} />
               </span>
               <span className="text-[9px] font-mono tracking-[0.2em] text-[#8E8E8E] uppercase">
                 CSE AI/ML // VIZAG
@@ -129,7 +130,7 @@ export function Navigation() {
                           : 'text-[#8E8E8E] group-hover:text-[#F2F0EA]'
                       }`}
                     >
-                      {item.label}
+                      <CyberScramble text={item.label} scrambleOnHover={true} />
                     </span>
                     {isActive && (
                       <span className="absolute -bottom-1 left-0 right-0 h-[1.5px] bg-[#C7FF4A]" />

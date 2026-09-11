@@ -8,6 +8,8 @@ import { useCursorHover } from '@/hooks/useCursorHover';
 import { CornerDownRight, Activity, Eye, Compass, ShieldAlert } from 'lucide-react';
 import { playHoverTick, playSynapticPulse } from '@/lib/sound';
 import { ProjectSimulations } from '@/components/ui/ProjectSimulations';
+import { CyberScramble } from '@/components/ui/CyberScramble';
+import { TechGlossaryTooltip } from '@/components/ui/TechGlossaryTooltip';
 
 const PROJECT_THEMES = [
   {
@@ -77,9 +79,9 @@ export function Projects() {
       <div className="mx-auto max-w-[1680px] px-6 sm:px-10 md:px-14 lg:px-16 relative z-10">
         <SectionHeader
           number="04"
-          label="SELECTED WORK"
-          subtitle="DATA-DRIVEN SCENE ARCHITECTURE // PLACEHOLDERS RESERVED FOR REAL BUILDS"
-          title="RESERVED WORKSPACES"
+          label="SELECTED BUILDS"
+          subtitle="COMPUTATIONAL SYSTEMS & INTERACTIVE MODELS // REAL-TIME CODE ARCHITECTURE"
+          title="ENGINEERING WORKSPACES"
         />
 
         {/* Project Selector Bar */}
@@ -169,7 +171,7 @@ export function Projects() {
                 </div>
 
                 <h3 className="text-3xl sm:text-5xl md:text-6xl font-sans font-black uppercase text-[#F2F0EA] tracking-tight leading-[0.95] group-hover:translate-x-1 transition-transform duration-300">
-                  {activeProject.title}
+                  <CyberScramble text={activeProject.title} />
                 </h3>
               </div>
 
@@ -184,17 +186,18 @@ export function Projects() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {activeProject.technologies.map((tech) => (
-                    <span
-                      key={tech}
-                      className="text-xs font-mono tracking-wider font-bold px-3 py-1.5 rounded-md border uppercase transition-transform hover:scale-105"
-                      style={{
-                        color: activeTheme.primary,
-                        borderColor: `${activeTheme.primary}40`,
-                        backgroundColor: `${activeTheme.primary}10`,
-                      }}
-                    >
-                      {tech}
-                    </span>
+                    <TechGlossaryTooltip key={tech} termKey={tech}>
+                      <span
+                        className="inline-block text-xs font-mono tracking-wider font-bold px-3 py-1.5 rounded-md border uppercase transition-transform hover:scale-105"
+                        style={{
+                          color: activeTheme.primary,
+                          borderColor: `${activeTheme.primary}40`,
+                          backgroundColor: `${activeTheme.primary}10`,
+                        }}
+                      >
+                        {tech}
+                      </span>
+                    </TechGlossaryTooltip>
                   ))}
                 </div>
               </div>
