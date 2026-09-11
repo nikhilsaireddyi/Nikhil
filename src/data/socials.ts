@@ -11,7 +11,7 @@ export const socialLinks: readonly SocialLink[] = [
   {
     platform: 'linkedin',
     label: 'LINKEDIN',
-    url: 'http://www.linkedin.com/in/nikhil-sai-reddy-induri-0ab948432',
+    url: 'https://www.linkedin.com/in/nikhil-sai-reddy-induri-0ab948432',
     displayHandle: 'linkedin.com/in/nikhil-sai-reddy-induri',
     index: '02',
   },
