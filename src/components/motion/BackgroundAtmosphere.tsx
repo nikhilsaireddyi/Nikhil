@@ -108,9 +108,51 @@ const PALETTE = [
   { primary: '#FFB703', glow: 'rgba(255, 183, 3, 0.8)' },
 ];
 
+type CyberTheme = 'lime' | 'cyberpunk' | 'solar' | 'violet';
+
+interface ThemeAccentConfig {
+  primary: string;
+  primaryAlpha: (a: number) => string;
+  glow: string;
+  secondary: string;
+  secondaryAlpha: (a: number) => string;
+}
+
+const THEME_ACCENTS: Record<CyberTheme, ThemeAccentConfig> = {
+  lime: {
+    primary: '#C7FF4A',
+    primaryAlpha: (a: number) => `rgba(199, 255, 74, ${a})`,
+    glow: '#C7FF4A',
+    secondary: '#00F0FF',
+    secondaryAlpha: (a: number) => `rgba(0, 240, 255, ${a})`,
+  },
+  cyberpunk: {
+    primary: '#00F0FF',
+    primaryAlpha: (a: number) => `rgba(0, 240, 255, ${a})`,
+    glow: '#00F0FF',
+    secondary: '#FF007F',
+    secondaryAlpha: (a: number) => `rgba(255, 0, 127, ${a})`,
+  },
+  solar: {
+    primary: '#FFB703',
+    primaryAlpha: (a: number) => `rgba(255, 183, 3, ${a})`,
+    glow: '#FFB703',
+    secondary: '#FF5E00',
+    secondaryAlpha: (a: number) => `rgba(255, 94, 0, ${a})`,
+  },
+  violet: {
+    primary: '#A855F7',
+    primaryAlpha: (a: number) => `rgba(168, 85, 247, ${a})`,
+    glow: '#A855F7',
+    secondary: '#00F0FF',
+    secondaryAlpha: (a: number) => `rgba(0, 240, 255, ${a})`,
+  },
+};
+
 export function BackgroundAtmosphere() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reducedMotion = useReducedMotion();
+  const activeThemeRef = useRef<CyberTheme>('lime');
   const [vehicleMode, setVehicleMode] = useState<BgVehicleMode>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('portfolio-bg-vehicle') as BgVehicleMode | null;
@@ -120,6 +162,27 @@ export function BackgroundAtmosphere() {
     }
     return 'escort';
   });
+
+  // Listen for global theme changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = (document.documentElement.getAttribute('data-theme') ||
+        localStorage.getItem('portfolio-cyber-theme')) as CyberTheme | null;
+      if (savedTheme && THEME_ACCENTS[savedTheme]) {
+        activeThemeRef.current = savedTheme;
+      }
+    }
+
+    const handleThemeChange = (e: Event) => {
+      const customEvent = e as CustomEvent<CyberTheme>;
+      if (customEvent.detail && THEME_ACCENTS[customEvent.detail]) {
+        activeThemeRef.current = customEvent.detail;
+      }
+    };
+
+    window.addEventListener('set-portfolio-theme', handleThemeChange);
+    return () => window.removeEventListener('set-portfolio-theme', handleThemeChange);
+  }, []);
 
   // Listen for global vehicle mode changes
   useEffect(() => {
@@ -371,7 +434,7 @@ export function BackgroundAtmosphere() {
             targetX,
             targetY,
             life: 1.0,
-            color: '#C7FF4A',
+            color: (THEME_ACCENTS[activeThemeRef.current] || THEME_ACCENTS.lime).primary,
           });
         });
       }
@@ -1130,26 +1193,27 @@ export function BackgroundAtmosphere() {
         };
 
         // Render spaceship hull faces
-        drawPoly([3, 5, 10], '#0B0D16', 'rgba(0, 240, 255, 0.5)', 1.2);
-        drawPoly([4, 6, 11], '#0B0D16', 'rgba(0, 240, 255, 0.5)', 1.2);
+        const currentTheme = THEME_ACCENTS[activeThemeRef.current] || THEME_ACCENTS.lime;
+        drawPoly([3, 5, 10], '#0B0D16', currentTheme.primaryAlpha(0.5), 1.2);
+        drawPoly([4, 6, 11], '#0B0D16', currentTheme.primaryAlpha(0.5), 1.2);
         drawPoly([0, 3, 9], '#080A10', 'rgba(121, 40, 202, 0.35)', 1);
         drawPoly([0, 4, 9], '#080A10', 'rgba(121, 40, 202, 0.35)', 1);
-        drawPoly([0, 1, 3], '#121522', 'rgba(0, 240, 255, 0.6)', 1.2);
-        drawPoly([0, 1, 4], '#161A2A', 'rgba(0, 240, 255, 0.6)', 1.2);
-        drawPoly([1, 2, 3], '#0D0F1A', 'rgba(0, 240, 255, 0.4)', 1);
-        drawPoly([1, 2, 4], '#111422', 'rgba(0, 240, 255, 0.4)', 1);
-        drawPoly([2, 7, 10], '#090B14', 'rgba(255, 0, 127, 0.5)', 1);
-        drawPoly([2, 8, 11], '#090B14', 'rgba(255, 0, 127, 0.5)', 1);
-        drawPoly([0, 1, 4, 3], 'rgba(0, 240, 255, 0.65)', '#00F0FF', 1.5);
+        drawPoly([0, 1, 3], '#121522', currentTheme.primaryAlpha(0.6), 1.2);
+        drawPoly([0, 1, 4], '#161A2A', currentTheme.primaryAlpha(0.6), 1.2);
+        drawPoly([1, 2, 3], '#0D0F1A', currentTheme.primaryAlpha(0.4), 1);
+        drawPoly([1, 2, 4], '#111422', currentTheme.primaryAlpha(0.4), 1);
+        drawPoly([2, 7, 10], '#090B14', currentTheme.secondaryAlpha(0.5), 1);
+        drawPoly([2, 8, 11], '#090B14', currentTheme.secondaryAlpha(0.5), 1);
+        drawPoly([0, 1, 4, 3], currentTheme.primaryAlpha(0.65), currentTheme.primary, 1.5);
 
         // Vessel Telemetry Label
         const nose = projShipVerts[0];
         if (nose) {
           ctx.save();
           ctx.font = '8px monospace';
-          ctx.fillStyle = 'rgba(0, 240, 255, 0.75)';
+          ctx.fillStyle = currentTheme.primaryAlpha(0.75);
           ctx.fillText('NSR-01 // QUANTUM SCOUT', nose.px + 16, nose.py - 10);
-          ctx.strokeStyle = 'rgba(0, 240, 255, 0.35)';
+          ctx.strokeStyle = currentTheme.primaryAlpha(0.35);
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(nose.px + 4, nose.py - 4);
@@ -1248,7 +1312,8 @@ export function BackgroundAtmosphere() {
         ctx.restore();
 
         // 2. Draw Car Polygonal Faces
-        const drawCarPoly = (indices: number[], fill: string, stroke = '#C7FF4A', lineWidth = 1) => {
+        const currentCarTheme = THEME_ACCENTS[activeThemeRef.current] || THEME_ACCENTS.lime;
+        const drawCarPoly = (indices: number[], fill: string, stroke = currentCarTheme.primary, lineWidth = 1) => {
           ctx.save();
           ctx.beginPath();
           for (let i = 0; i < indices.length; i++) {
@@ -1268,21 +1333,21 @@ export function BackgroundAtmosphere() {
         };
 
         // Sculpted Hood & Canopy
-        drawCarPoly([0, 1, 3, 5], '#0F121C', 'rgba(199, 255, 74, 0.6)', 1.2);
-        drawCarPoly([0, 2, 4, 5], '#141824', 'rgba(199, 255, 74, 0.6)', 1.2);
-        drawCarPoly([5, 6, 8, 7], 'rgba(0, 240, 255, 0.45)', '#00F0FF', 1.4); // Windshield
-        drawCarPoly([8, 9, 11, 13], '#0D1018', 'rgba(199, 255, 74, 0.5)', 1);
-        drawCarPoly([8, 10, 12, 13], '#111520', 'rgba(199, 255, 74, 0.5)', 1);
+        drawCarPoly([0, 1, 3, 5], '#0F121C', currentCarTheme.primaryAlpha(0.6), 1.2);
+        drawCarPoly([0, 2, 4, 5], '#141824', currentCarTheme.primaryAlpha(0.6), 1.2);
+        drawCarPoly([5, 6, 8, 7], currentCarTheme.secondaryAlpha(0.45), currentCarTheme.secondary, 1.4); // Windshield
+        drawCarPoly([8, 9, 11, 13], '#0D1018', currentCarTheme.primaryAlpha(0.5), 1);
+        drawCarPoly([8, 10, 12, 13], '#111520', currentCarTheme.primaryAlpha(0.5), 1);
 
         // Rear Haunches & LED Taillight Bar
-        drawCarPoly([13, 14, 16, 17, 15], '#080A10', 'rgba(255, 0, 127, 0.85)', 1.5);
+        drawCarPoly([13, 14, 16, 17, 15], '#080A10', currentCarTheme.secondaryAlpha(0.85), 1.5);
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(projCarVerts[14].px, projCarVerts[14].py);
         ctx.lineTo(projCarVerts[15].px, projCarVerts[15].py);
-        ctx.strokeStyle = '#FF007F';
+        ctx.strokeStyle = currentCarTheme.secondary;
         ctx.lineWidth = 2.5;
-        ctx.shadowColor = '#FF007F';
+        ctx.shadowColor = currentCarTheme.secondary;
         ctx.shadowBlur = 10;
         ctx.stroke();
         ctx.restore();
@@ -1292,9 +1357,9 @@ export function BackgroundAtmosphere() {
         ctx.beginPath();
         ctx.moveTo(projCarVerts[18].px, projCarVerts[18].py);
         ctx.lineTo(projCarVerts[19].px, projCarVerts[19].py);
-        ctx.strokeStyle = '#C7FF4A';
+        ctx.strokeStyle = currentCarTheme.primary;
         ctx.lineWidth = 3.0;
-        ctx.shadowColor = '#C7FF4A';
+        ctx.shadowColor = currentCarTheme.primary;
         ctx.shadowBlur = 12;
         ctx.stroke();
         // Wing pylons

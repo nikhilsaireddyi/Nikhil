@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Terminal, X, CornerDownLeft, Sparkles, ShieldAlert, Cpu } from 'lucide-react';
 import { playKeyClick, playSynapticPulse, playOverclockSurge } from '@/lib/sound';
+import { applyTheme, CyberTheme } from '@/components/ui/ThemeSwitcher';
 
 interface HistoryItem {
   id: string;
@@ -226,10 +227,7 @@ export function CyberCommandPalette() {
 
       case 'theme':
         if (['lime', 'cyberpunk', 'solar', 'violet'].includes(arg)) {
-          document.documentElement.setAttribute('data-theme', arg);
-          try {
-            localStorage.setItem('nikhil_theme_preference', arg);
-          } catch {}
+          applyTheme(arg as CyberTheme);
           output = (
             <div className="text-[#C7FF4A]">
               [OK] THEME SHIFTED TO: <span className="font-bold uppercase">{arg}</span>

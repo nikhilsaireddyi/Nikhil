@@ -114,8 +114,21 @@ export default function RootLayout({
             }),
           }}
         />
+        {/* Instant Theme Pre-Hydration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var saved = localStorage.getItem('portfolio-cyber-theme') || localStorage.getItem('nikhil_theme_preference') || 'lime';
+                  document.documentElement.setAttribute('data-theme', saved);
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
       </head>
-      <body className="font-sans bg-[#070707] text-[#F2F0EA] selection:bg-[#C7FF4A] selection:text-[#070707] relative antialiased">
+      <body className="font-sans bg-[#070707] text-[#F2F0EA] relative antialiased">
         <LenisProvider>
           {/* Visual Canvas & Structural Grid Background Layers */}
           <BackgroundAtmosphere />

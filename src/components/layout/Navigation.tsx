@@ -11,7 +11,7 @@ import { ScrollPayload } from '@/motion/scroll';
 import { Menu, X, ArrowUpRight, FileText, Terminal } from 'lucide-react';
 import { socialLinks } from '@/data/socials';
 import { ResumeModal } from '@/components/ui/ResumeModal';
-import { ThemeSwitcher } from '@/components/ui/ThemeSwitcher';
+import { ThemeSwitcher, THEMES, applyTheme, CyberTheme } from '@/components/ui/ThemeSwitcher';
 import { CyberCommandPalette, openCyberShell } from '@/components/ui/CyberCommandPalette';
 import { CyberScramble } from '@/components/ui/CyberScramble';
 
@@ -20,6 +20,26 @@ export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [resumeOpen, setResumeOpen] = useState<boolean>(false);
   const [activeSection, setActiveSection] = useState<string>('hero');
+  const [currentTheme, setCurrentTheme] = useState<CyberTheme>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = (document.documentElement.getAttribute('data-theme') ||
+        localStorage.getItem('portfolio-cyber-theme')) as CyberTheme | null;
+      if (saved && THEMES.some((t) => t.id === saved)) {
+        return saved;
+      }
+    }
+    return 'lime';
+  });
+
+  // Sync theme with global state
+  useEffect(() => {
+    const handleTheme = (e: Event) => {
+      const customEvent = e as CustomEvent<CyberTheme>;
+      if (customEvent.detail) setCurrentTheme(customEvent.detail);
+    };
+    window.addEventListener('set-portfolio-theme', handleTheme);
+    return () => window.removeEventListener('set-portfolio-theme', handleTheme);
+  }, []);
 
   useLenisScroll(
     useCallback((payload: ScrollPayload) => {
@@ -237,6 +257,45 @@ export function Navigation() {
               <Terminal size={13} />
               <span>CLI (⌘K)</span>
             </button>
+          </div>
+
+          {/* Mobile Cyber Palettes Grid */}
+          <div className="border border-[rgba(242,240,234,0.08)] bg-[rgba(18,18,24,0.5)] rounded-lg p-2.5 mb-2">
+            <div className="text-[9px] font-mono tracking-[0.2em] text-[#8E8E8E] mb-2 uppercase flex items-center justify-between">
+              <span>CYBER PALETTE</span>
+              <span
+                className="text-[9px] font-bold"
+                style={{ color: THEMES.find((t) => t.id === currentTheme)?.color }}
+              >
+                {THEMES.find((t) => t.id === currentTheme)?.name}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              {THEMES.map((theme) => {
+                const isSelected = currentTheme === theme.id;
+                return (
+                  <button
+                    key={theme.id}
+                    type="button"
+                    onClick={() => {
+                      applyTheme(theme.id);
+                      setCurrentTheme(theme.id);
+                    }}
+                    className={`flex items-center gap-2 px-2.5 py-1.5 rounded text-[11px] font-mono transition-all ${
+                      isSelected
+                        ? 'bg-[rgba(242,240,234,0.12)] border border-[rgba(242,240,234,0.25)] text-[#F2F0EA] font-bold shadow-sm'
+                        : 'border border-[rgba(242,240,234,0.06)] text-[#8E8E8E] hover:text-[#F2F0EA] hover:bg-[rgba(242,240,234,0.04)]'
+                    }`}
+                  >
+                    <span
+                      className="h-2.5 w-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: theme.color, boxShadow: `0 0 6px ${theme.glow}` }}
+                    />
+                    <span className="truncate">{theme.shortName}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {navigationItems.map((item) => (

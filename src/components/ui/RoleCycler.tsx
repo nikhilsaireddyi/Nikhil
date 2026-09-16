@@ -51,8 +51,11 @@ export const RoleCycler = memo(function RoleCycler({
     >
       {prefix && <span className="text-[#8E8E8E] mr-1">{prefix}</span>}
       <span
-        className="bg-gradient-to-r from-[#00F0FF] via-[#7928CA] to-[#FF007F] bg-clip-text text-transparent font-bold transition-opacity duration-500"
-        style={{ opacity }}
+        className="bg-clip-text text-transparent font-bold transition-opacity duration-500"
+        style={{
+          opacity,
+          backgroundImage: 'var(--theme-gradient, linear-gradient(135deg, #C7FF4A 0%, #00F0FF 50%, #7928CA 100%))',
+        }}
       >
         {roles[currentRoleIndex]}
       </span>
