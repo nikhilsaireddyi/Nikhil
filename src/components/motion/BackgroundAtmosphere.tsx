@@ -143,7 +143,7 @@ export function BackgroundAtmosphere() {
     let height = (canvas.height = window.innerHeight);
 
     const isMobile = width < 768;
-    const dustCount = isMobile ? 65 : 130;
+    const dustCount = isMobile ? 20 : 40;
 
     const mouse = {
       x: 0,
@@ -164,7 +164,7 @@ export function BackgroundAtmosphere() {
     let time = 0;
     let wheelRotation = 0;
 
-    // 1. Initialize Volumetric 3D Deep Space Bokeh Dust
+    // 1. Initialize Volumetric 3D Deep Space Bokeh Dust (Calm ambient drift)
     const dustParticles: BokehParticle3D[] = [];
     for (let i = 0; i < dustCount; i++) {
       const p = PALETTE[i % PALETTE.length];
@@ -172,25 +172,25 @@ export function BackgroundAtmosphere() {
         x: (Math.random() - 0.5) * width * 2.2,
         y: (Math.random() - 0.5) * height * 2.2,
         z: Math.random() * 900 + 50,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        vz: (Math.random() - 0.5) * 0.8,
-        size: Math.random() * 3.5 + 1.0,
+        vx: (Math.random() - 0.5) * 0.12,
+        vy: (Math.random() - 0.5) * 0.12,
+        vz: (Math.random() - 0.5) * 0.22,
+        size: Math.random() * 2.5 + 0.8,
         color: p.primary,
-        baseAlpha: Math.random() * 0.45 + 0.15,
+        baseAlpha: Math.random() * 0.25 + 0.12,
       });
     }
 
-    // 2. Initialize Relativistic Accretion Disk (Interstellar-style Doppler matter)
+    // 2. Initialize Relativistic Accretion Disk (Subtle slow rotation)
     const accretionParticles: AccretionParticle[] = [];
-    const accretionCount = isMobile ? 40 : 80;
+    const accretionCount = isMobile ? 18 : 32;
     for (let i = 0; i < accretionCount; i++) {
       accretionParticles.push({
         angle: Math.random() * Math.PI * 2,
         dist: 45 + Math.random() * 125,
-        speed: 0.015 + Math.random() * 0.025,
-        size: Math.random() * 2.2 + 0.8,
-        verticalJitter: (Math.random() - 0.5) * 12,
+        speed: 0.005 + Math.random() * 0.008,
+        size: Math.random() * 1.8 + 0.6,
+        verticalJitter: (Math.random() - 0.5) * 8,
       });
     }
 
@@ -507,8 +507,8 @@ export function BackgroundAtmosphere() {
           ctx.stroke();
         }
 
-        // Horizontal scrolling grid lines
-        const gridOffset = (time * 120 * (1 + scrollVelocity * 2)) % 30;
+        // Horizontal scrolling grid lines (Slow and gentle)
+        const gridOffset = (time * 30 * (1 + scrollVelocity * 0.5)) % 30;
         for (let y = gridHorizonY; y <= height; y += (y - gridHorizonY) * 0.35 + 8) {
           ctx.beginPath();
           ctx.moveTo(0, y + gridOffset * 0.2);
@@ -522,12 +522,12 @@ export function BackgroundAtmosphere() {
       if (t > 0.70) {
         const ringBlend = Math.min(1.0, (t - 0.70) / 0.25);
         ctx.save();
-        const syncRadius = 140 + Math.sin(time * 3) * 10;
+        const syncRadius = 140 + Math.sin(time * 1.5) * 6;
         for (let sr = 1; sr <= 3; sr++) {
           ctx.beginPath();
           ctx.arc(width * 0.65, height * 0.5, syncRadius * sr * 0.6, 0, Math.PI * 2);
-          ctx.strokeStyle = sr % 2 === 0 ? `rgba(255, 183, 3, ${0.25 * ringBlend})` : `rgba(199, 255, 74, ${0.2 * ringBlend})`;
-          ctx.lineWidth = 1.2;
+          ctx.strokeStyle = sr % 2 === 0 ? `rgba(255, 183, 3, ${0.15 * ringBlend})` : `rgba(199, 255, 74, ${0.12 * ringBlend})`;
+          ctx.lineWidth = 1.0;
           ctx.setLineDash([8, 12]);
           ctx.stroke();
           ctx.setLineDash([]);
@@ -535,19 +535,19 @@ export function BackgroundAtmosphere() {
         ctx.restore();
       }
 
-      // 2. Volumetric 3D Deep Space Dust + HYPERDRIVE WARP STREAKS
+      // 2. Volumetric 3D Deep Space Dust (Calm ambient floating)
       if (!reducedMotion) {
-        const warpFactor = Math.min(1.0, scrollVelocity * 1.8);
-        const dustSpeedFactor = 1.0 + Math.min(scrollVelocity * 2.5, 14);
+        const warpFactor = Math.min(0.25, scrollVelocity * 0.2);
+        const dustSpeedFactor = 1.0 + Math.min(scrollVelocity * 0.4, 2.0);
         const fovDust = 380;
-        const dustCX = width * 0.5 + mouse.x * 0.3;
-        const dustCY = height * 0.5 + mouse.y * 0.3;
+        const dustCX = width * 0.5 + mouse.x * 0.15;
+        const dustCY = height * 0.5 + mouse.y * 0.15;
 
         for (let i = 0; i < dustParticles.length; i++) {
           const d = dustParticles[i];
           d.x += d.vx * dustSpeedFactor;
           d.y += d.vy * dustSpeedFactor;
-          d.z -= d.vz * dustSpeedFactor + 0.6 + warpFactor * 3;
+          d.z -= d.vz * dustSpeedFactor + 0.18 + warpFactor * 0.5;
 
           // Gravitational Tractor Beam Inward Spiral Pull
           if (isHolding) {
@@ -555,12 +555,12 @@ export function BackgroundAtmosphere() {
             const dyM = (mouse.rawY - dustCY) - d.y * (fovDust / d.z);
             const distM = Math.hypot(dxM, dyM);
             if (distM < 350 && distM > 10) {
-              const pull = (1 - distM / 350) * (6 + holdDuration * 6);
-              d.vx += (dxM / distM) * pull * 0.05;
-              d.vy += (dyM / distM) * pull * 0.05;
+              const pull = (1 - distM / 350) * (4 + holdDuration * 4);
+              d.vx += (dxM / distM) * pull * 0.03;
+              d.vy += (dyM / distM) * pull * 0.03;
               // Add rotational swirl
-              d.vx += (-dyM / distM) * pull * 0.04;
-              d.vy += (dxM / distM) * pull * 0.04;
+              d.vx += (-dyM / distM) * pull * 0.02;
+              d.vy += (dxM / distM) * pull * 0.02;
             }
           }
 
@@ -579,34 +579,32 @@ export function BackgroundAtmosphere() {
           if (px >= 0 && px <= width && py >= 0 && py <= height) {
             const depthRatio = 1 - d.z / 900;
             const isClose = d.z < 280;
-            const r = isClose ? d.size * scale * 2.2 : Math.max(0.7, d.size * scale);
-            const alpha = (isClose ? d.baseAlpha * 0.4 : d.baseAlpha * depthRatio) * (1 + trebleBoost * 0.5);
+            const r = isClose ? d.size * scale * 1.6 : Math.max(0.6, d.size * scale);
+            const alpha = (isClose ? d.baseAlpha * 0.35 : d.baseAlpha * depthRatio) * (1 + trebleBoost * 0.3);
 
             ctx.save();
-            if (warpFactor > 0.06) {
-              // RELATIVISTIC WARP SPEED STREAK
+            if (warpFactor > 0.12) {
+              // Subtle Streaks on fast scroll
               const dx = px - dustCX;
               const dy = py - dustCY;
               const distCenter = Math.hypot(dx, dy) || 1;
               const dirX = dx / distCenter;
               const dirY = dy / distCenter;
-              const streakLen = warpFactor * (distCenter * 0.22 + 18);
+              const streakLen = warpFactor * (distCenter * 0.06 + 6);
 
               ctx.beginPath();
               ctx.moveTo(px, py);
               ctx.lineTo(px + dirX * streakLen, py + dirY * streakLen);
-              ctx.strokeStyle = warpFactor > 0.4 ? '#FFFFFF' : d.color;
-              ctx.lineWidth = Math.max(1.2, r * (1 + warpFactor * 0.6));
-              ctx.globalAlpha = Math.min(0.9, alpha * 1.5);
-              ctx.shadowColor = d.color;
-              ctx.shadowBlur = 8;
+              ctx.strokeStyle = d.color;
+              ctx.lineWidth = Math.max(1.0, r * 1.1);
+              ctx.globalAlpha = Math.min(0.6, alpha);
               ctx.stroke();
             } else {
               // Normal Bokeh Particle
               ctx.beginPath();
               ctx.arc(px, py, r, 0, Math.PI * 2);
               ctx.fillStyle = d.color;
-              ctx.globalAlpha = Math.min(0.75, alpha);
+              ctx.globalAlpha = Math.min(0.6, alpha);
               if (isClose) {
                 ctx.shadowColor = d.color;
                 ctx.shadowBlur = 12;
@@ -891,8 +889,8 @@ export function BackgroundAtmosphere() {
         ctx.shadowBlur = 0;
       }
 
-      // 8. Branching Synaptic Lightning Arcs
-      const lightningTriggerRate = 0.08 + midBoost * 0.2;
+      // 8. Branching Synaptic Lightning Arcs (Disabled for calm atmosphere)
+      const lightningTriggerRate = 0;
       if (Math.random() < lightningTriggerRate && projectedNodes.length > 10) {
         const fromIdx = Math.floor(Math.random() * projectedNodes.length);
         const toIdx = (fromIdx + 1 + Math.floor(Math.random() * 4)) % projectedNodes.length;
@@ -1065,27 +1063,25 @@ export function BackgroundAtmosphere() {
           return { px, py, z: totalZ, scale };
         });
 
-        // Ion Plasma Thrusters
+        // Ion Plasma Thrusters (Subtle and soft)
         const thrusterIndices = [10, 11];
-        const thrusterSpeed = 3.0 + Math.min(scrollVelocity * 6, 20);
+        const thrusterSpeed = 1.2 + Math.min(scrollVelocity * 1.5, 3.5);
 
         for (const idx of thrusterIndices) {
           const nozzle = projShipVerts[idx];
-          if (nozzle) {
-            for (let p = 0; p < 2; p++) {
-              thrusterParticles.push({
-                x: nozzle.px + (Math.random() - 0.5) * 3,
-                y: nozzle.py + (Math.random() - 0.5) * 3,
-                z: nozzle.z,
-                vx: -Math.sin(shipYaw) * thrusterSpeed + (Math.random() - 0.5) * 1.5,
-                vy: Math.sin(shipPitch) * thrusterSpeed + (Math.random() - 0.5) * 1.5,
-                vz: -thrusterSpeed,
-                size: Math.random() * 3.5 + 1.5,
-                color: Math.random() > 0.3 ? '#00F0FF' : '#7928CA',
-                life: 1.0,
-                maxLife: Math.random() * 18 + 14,
-              });
-            }
+          if (nozzle && Math.random() < 0.35) {
+            thrusterParticles.push({
+              x: nozzle.px + (Math.random() - 0.5) * 2,
+              y: nozzle.py + (Math.random() - 0.5) * 2,
+              z: nozzle.z,
+              vx: -Math.sin(shipYaw) * thrusterSpeed + (Math.random() - 0.5) * 0.8,
+              vy: Math.sin(shipPitch) * thrusterSpeed + (Math.random() - 0.5) * 0.8,
+              vz: -thrusterSpeed,
+              size: Math.random() * 2.2 + 1.0,
+              color: Math.random() > 0.3 ? '#00F0FF' : '#7928CA',
+              life: 1.0,
+              maxLife: Math.random() * 12 + 10,
+            });
           }
         }
 
@@ -1107,9 +1103,9 @@ export function BackgroundAtmosphere() {
           ctx.beginPath();
           ctx.arc(tp.x, tp.y, tp.size * tp.life, 0, Math.PI * 2);
           ctx.fillStyle = tp.color;
-          ctx.globalAlpha = tp.life * 0.75;
+          ctx.globalAlpha = tp.life * 0.3;
           ctx.shadowColor = tp.color;
-          ctx.shadowBlur = 10;
+          ctx.shadowBlur = 4;
           ctx.fill();
           ctx.restore();
         }
@@ -1168,21 +1164,21 @@ export function BackgroundAtmosphere() {
       // 11. 3D CYBER SUPRA 911 AERODYNAMIC WIREFRAME
       // ====================================================================
       if (!reducedMotion && (vehicleMode === 'supra' || vehicleMode === 'escort')) {
-        wheelRotation += 0.08 * (1 + scrollVelocity * 3.5);
+        wheelRotation += 0.04 * (1 + scrollVelocity * 0.8);
 
-        // Car position along horizon path
+        // Car position along horizon path (Gentle floating motion)
         const carPathAngle = t * Math.PI * 1.5 + 0.2;
-        const carX = width * 0.48 + Math.cos(carPathAngle) * (width * 0.28) + mouse.x * 0.12;
-        const carY = height * 0.62 + Math.sin(carPathAngle * 0.8) * (height * 0.15) + mouse.y * 0.1;
+        const carX = width * 0.48 + Math.cos(carPathAngle) * (width * 0.28) + mouse.x * 0.04;
+        const carY = height * 0.62 + Math.sin(carPathAngle * 0.8) * (height * 0.15) + mouse.y * 0.04;
         const carZ = 200 + Math.sin(t * Math.PI * 2) * 60;
 
         lastCarPos.x = carX;
         lastCarPos.y = carY;
 
-        // Orientation
-        const carYaw = Math.sin(time * 0.6) * 0.15 + (mouse.x / width) * 0.25;
-        const carPitch = -0.12 + Math.min(0.2, scrollVelocity * 0.08); // squat under acceleration
-        const carRoll = -carYaw * 0.35;
+        // Orientation (Gentle banking)
+        const carYaw = Math.sin(time * 0.4) * 0.08 + (mouse.x / width) * 0.08;
+        const carPitch = -0.08 + Math.min(0.12, scrollVelocity * 0.04);
+        const carRoll = -carYaw * 0.25;
 
         const cY = Math.cos(carYaw);
         const sY = Math.sin(carYaw);
@@ -1344,17 +1340,17 @@ export function BackgroundAtmosphere() {
           ctx.restore();
         }
 
-        // Exhaust Flame Pops on High Scroll Velocity
-        if (scrollVelocity > 1.4 || Math.random() < 0.1) {
+        // Subtle Exhaust Flame Pops on High Scroll Velocity
+        if (scrollVelocity > 2.8) {
           const exhaustNodes = [projCarVerts[20], projCarVerts[21]];
           for (const ex of exhaustNodes) {
             ctx.save();
             ctx.beginPath();
-            const flameLen = (Math.random() * 12 + 8) * (1 + scrollVelocity);
-            ctx.arc(ex.px, ex.py + flameLen * 0.4, 3 + Math.random() * 3, 0, Math.PI * 2);
+            const flameLen = (Math.random() * 6 + 4) * (1 + scrollVelocity * 0.4);
+            ctx.arc(ex.px, ex.py + flameLen * 0.3, 1.8 + Math.random() * 1.5, 0, Math.PI * 2);
             ctx.fillStyle = Math.random() > 0.4 ? '#FF5E00' : '#FF007F';
             ctx.shadowColor = '#FF5E00';
-            ctx.shadowBlur = 12;
+            ctx.shadowBlur = 6;
             ctx.fill();
             ctx.restore();
           }
