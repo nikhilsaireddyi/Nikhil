@@ -32,6 +32,11 @@ export function LenisProvider({ children }: LenisProviderProps) {
       smoothWheel: true,
       wheelMultiplier: 0.9,
       touchMultiplier: 1.5,
+      prevent: (node) =>
+        node.hasAttribute('data-lenis-prevent') ||
+        !!node.closest('[data-lenis-prevent]') ||
+        !!node.closest('.overflow-y-auto') ||
+        node.classList.contains('lenis-prevent'),
     });
 
     lenisRef.current = lenis;

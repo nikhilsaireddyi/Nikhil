@@ -13,7 +13,6 @@ import {
   Terminal,
   RotateCw,
   Crosshair,
-  Layers,
   Zap,
   ExternalLink,
 } from 'lucide-react';
@@ -50,7 +49,7 @@ export function Hero() {
   const reducedMotion = useReducedMotion();
   const portraitCursor = useCursorHover('image', 'NIKHIL');
   const [sequenceComplete, setSequenceComplete] = useState<boolean>(() => reducedMotion);
-  const [visionMode, setVisionMode] = useState<'studio' | 'mesh' | 'tactical' | 'hologram'>('mesh');
+  const [visionMode, setVisionMode] = useState<'studio' | 'tactical' | 'hologram'>('studio');
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
   const isFlippedRef = useRef<boolean>(false);
   useEffect(() => {
@@ -62,11 +61,26 @@ export function Hero() {
   // Opening cinematic sequence
   useEffect(() => {
     if (reducedMotion) {
+      if (metaRef.current) metaRef.current.style.opacity = '1';
+      if (title1Ref.current) title1Ref.current.style.opacity = '1';
+      if (title2Ref.current) title2Ref.current.style.opacity = '1';
+      if (portraitWrapperRef.current) portraitWrapperRef.current.style.opacity = '1';
+      if (statementRef.current) statementRef.current.style.opacity = '1';
+      if (scrollIndicatorRef.current) scrollIndicatorRef.current.style.opacity = '1';
+      setSequenceComplete(true);
       return;
     }
 
     const tl = createTimeline({
-      onComplete: () => setSequenceComplete(true),
+      onComplete: () => {
+        setSequenceComplete(true);
+        if (metaRef.current) metaRef.current.style.opacity = '1';
+        if (title1Ref.current) title1Ref.current.style.opacity = '1';
+        if (title2Ref.current) title2Ref.current.style.opacity = '1';
+        if (portraitWrapperRef.current) portraitWrapperRef.current.style.opacity = '1';
+        if (statementRef.current) statementRef.current.style.opacity = '1';
+        if (scrollIndicatorRef.current) scrollIndicatorRef.current.style.opacity = '1';
+      },
     });
 
     if (metaRef.current) {
@@ -149,6 +163,9 @@ export function Hero() {
     return () => {
       if (targetsToClean.length) {
         remove(targetsToClean);
+        targetsToClean.forEach((el) => {
+          el.style.opacity = '1';
+        });
       }
     };
   }, [reducedMotion]);
@@ -232,13 +249,13 @@ export function Hero() {
         {/* Top Technical Metadata Bar */}
         <div
           ref={metaRef}
-          className="flex flex-wrap items-center justify-between gap-4 border-b border-[rgba(242,240,234,0.08)] pb-4 text-[10px] sm:text-xs font-mono tracking-[0.2em] text-[#8E8E8E] opacity-0"
+          className="flex flex-wrap items-center justify-between gap-4 border-b border-[rgba(242,240,234,0.08)] pb-4 text-[10px] sm:text-xs font-mono tracking-[0.2em] text-[#A8ABB8]"
         >
           <div className="flex items-center gap-2">
             <Cpu size={14} className="text-[#00F0FF]" />
-            <span className="text-[#F2F0EA]">CSE AI/ML</span>
+            <span className="text-[#F2F0EA] font-medium">CSE AI/ML</span>
             <span className="text-[#555555]">{'//'}</span>
-            <span>VIZAG / INDIA</span>
+            <span className="text-[#D0D4E0]">VIZAG / INDIA</span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -253,7 +270,7 @@ export function Hero() {
             <div className="overflow-hidden">
               <h1
                 ref={title1Ref}
-                className="text-6xl sm:text-8xl md:text-[10.5vw] font-sans font-black tracking-[-0.04em] text-[#F2F0EA] leading-[0.88] uppercase opacity-0"
+                className="text-6xl sm:text-8xl md:text-[10.5vw] font-sans font-black tracking-[-0.04em] text-[#F2F0EA] leading-[0.88] uppercase"
               >
                 <CyberScramble text="NIKHIL" />
               </h1>
@@ -262,7 +279,7 @@ export function Hero() {
             <div className="overflow-hidden mt-1 sm:mt-2">
               <h1
                 ref={title2Ref}
-                className="text-6xl sm:text-8xl md:text-[10.5vw] font-sans font-black tracking-[-0.04em] text-[#F2F0EA] leading-[0.88] uppercase opacity-0 flex items-baseline gap-3"
+                className="text-6xl sm:text-8xl md:text-[10.5vw] font-sans font-black tracking-[-0.04em] text-[#F2F0EA] leading-[0.88] uppercase flex items-baseline gap-3"
               >
                 <span className="bg-gradient-to-r from-[#F2F0EA] via-[#F2F0EA] to-[#00F0FF] hover:to-[#FF007F] bg-clip-text text-transparent transition-all duration-500">
                   <CyberScramble text="SAI REDDY" />
@@ -272,7 +289,7 @@ export function Hero() {
             </div>
 
             {/* Supporting Statement */}
-            <div ref={statementRef} className="mt-8 sm:mt-10 max-w-2xl opacity-0">
+            <div ref={statementRef} className="mt-8 sm:mt-10 max-w-2xl">
               <div className="mb-3">
                 <RoleCycler
                   className="text-xs sm:text-sm md:text-base font-bold"
@@ -280,13 +297,16 @@ export function Hero() {
                 />
               </div>
 
-              <p className="text-base sm:text-lg md:text-xl font-sans font-light text-[#8E8E8E] leading-relaxed">
+              <p
+                style={{ color: '#F2F0EA' }}
+                className="text-base sm:text-lg md:text-xl font-sans font-medium text-[#F2F0EA] leading-relaxed drop-shadow-sm"
+              >
                 {siteConfig.tagline}
               </p>
 
               {/* Colorful Vibrant Tech Stack Badges with Interactive Glossary */}
               <div className="mt-6 flex flex-wrap items-center gap-2">
-                <div className="flex items-center gap-1 text-[11px] font-mono text-[#8E8E8E] mr-2">
+                <div className="flex items-center gap-1 text-[11px] font-mono text-[#A8ABB8] mr-2">
                   <Terminal size={13} className="text-[#00F0FF]" />
                   <span>CORE:</span>
                 </div>
@@ -302,10 +322,10 @@ export function Hero() {
                 ))}
               </div>
 
-              <div className="mt-5 flex items-center gap-4 text-xs font-mono text-[#555555] tracking-widest">
-                <span>EST. 2026</span>
-                <span>•</span>
-                <span className="text-[#00F0FF]/80">NXT WAVE // ADVANCED TECH</span>
+              <div className="mt-5 flex items-center gap-4 text-xs font-mono text-[#A8ABB8] tracking-widest">
+                <span className="text-[#F2F0EA] font-semibold">EST. 2026</span>
+                <span className="text-[#555555]">•</span>
+                <span className="text-[#00F0FF] font-semibold">NXT WAVE // ADVANCED TECH</span>
               </div>
             </div>
           </div>
@@ -333,7 +353,6 @@ export function Hero() {
               <div className="mb-3 w-full flex items-center justify-between gap-1 p-1 rounded-xl bg-[#090B12]/90 border border-[rgba(242,240,234,0.12)] backdrop-blur-xl shadow-2xl text-[9px] font-mono relative z-20">
                 {[
                   { id: 'studio', label: 'STUDIO', icon: Sparkles, color: '#F2F0EA' },
-                  { id: 'mesh', label: 'AI MESH', icon: Layers, color: '#00F0FF' },
                   { id: 'tactical', label: 'TACTICAL', icon: Crosshair, color: '#FF007F' },
                   { id: 'hologram', label: 'HOLOGRAM', icon: Zap, color: '#C7FF4A' },
                 ].map((m) => {
@@ -345,7 +364,7 @@ export function Hero() {
                       type="button"
                       onClick={() => {
                         playApertureClick();
-                        setVisionMode(m.id as 'studio' | 'mesh' | 'tactical' | 'hologram');
+                        setVisionMode(m.id as 'studio' | 'tactical' | 'hologram');
                         if (isFlipped) setIsFlipped(false);
                       }}
                       onMouseEnter={playHoverTick}
@@ -441,7 +460,7 @@ export function Hero() {
                       style={{ transform: 'translateZ(35px)' }}
                     >
                       <Image
-                        src="/images/nikhil-v2.jpg"
+                        src="/images/nikhil-v3.jpg"
                         alt="Nikhil Sai Reddy - Authentic Portrait"
                         fill
                         priority
@@ -496,58 +515,7 @@ export function Hero() {
                         </>
                       )}
 
-                      {/* =================================================== */}
-                      {/* MODE 2: AI NEURAL FACE-MESH & DEPTH HEATMAP         */}
-                      {/* =================================================== */}
-                      {visionMode === 'mesh' && (
-                        <div
-                          className="absolute inset-0 pointer-events-none transition-opacity duration-300"
-                          style={{ transform: 'translateZ(45px)' }}
-                        >
-                          <svg viewBox="0 0 100 100" className="w-full h-full">
-                            {/* Forehead & Temporal Facets */}
-                            <polygon points="50,25 42,27 50,33" fill="rgba(0, 240, 255, 0.12)" stroke="rgba(0, 240, 255, 0.5)" strokeWidth="0.35" />
-                            <polygon points="50,25 58,27 50,33" fill="rgba(0, 240, 255, 0.12)" stroke="rgba(0, 240, 255, 0.5)" strokeWidth="0.35" />
-                            <polygon points="42,27 36,32 42,31" fill="rgba(121, 40, 202, 0.12)" stroke="rgba(121, 40, 202, 0.55)" strokeWidth="0.35" />
-                            <polygon points="58,27 64,32 58,31" fill="rgba(121, 40, 202, 0.12)" stroke="rgba(121, 40, 202, 0.55)" strokeWidth="0.35" />
 
-                            {/* Eye Contours */}
-                            <polygon points="36,36 44,35 42,38 37,38" fill="rgba(0, 240, 255, 0.15)" stroke="#00F0FF" strokeWidth="0.4" />
-                            <polygon points="56,35 64,36 63,38 58,38" fill="rgba(0, 240, 255, 0.15)" stroke="#00F0FF" strokeWidth="0.4" />
-
-                            {/* Nose Bridge Pyramid */}
-                            <polygon points="50,33 46,45 54,45" fill="rgba(255, 0, 127, 0.15)" stroke="rgba(255, 0, 127, 0.6)" strokeWidth="0.4" />
-                            <polygon points="46,45 50,47 54,45" fill="rgba(0, 240, 255, 0.2)" stroke="#00F0FF" strokeWidth="0.4" />
-
-                            {/* Cheekbone Planes */}
-                            <polygon points="35,42 46,45 38,52" fill="rgba(0, 240, 255, 0.08)" stroke="rgba(0, 240, 255, 0.4)" strokeWidth="0.35" />
-                            <polygon points="65,42 54,45 62,52" fill="rgba(0, 240, 255, 0.08)" stroke="rgba(0, 240, 255, 0.4)" strokeWidth="0.35" />
-
-                            {/* Mouth & Lips */}
-                            <polygon points="43,54 50,53 57,54 50,57" fill="rgba(255, 0, 127, 0.2)" stroke="#FF007F" strokeWidth="0.45" />
-
-                            {/* Jawline to Chin */}
-                            <polygon points="38,56 44,62 50,65 50,57" fill="rgba(199, 255, 74, 0.08)" stroke="rgba(199, 255, 74, 0.45)" strokeWidth="0.35" />
-                            <polygon points="62,56 56,62 50,65 50,57" fill="rgba(199, 255, 74, 0.08)" stroke="rgba(199, 255, 74, 0.45)" strokeWidth="0.35" />
-
-                            {/* Landmark Vertex Nodes */}
-                            {[
-                              [50, 25], [42, 27], [58, 27], [36, 32], [44, 31], [56, 31], [64, 32],
-                              [40, 36], [60, 36], [50, 33], [50, 40], [50, 47], [46, 45], [54, 45],
-                              [35, 42], [65, 42], [43, 54], [50, 53], [57, 54], [50, 57], [44, 62], [50, 65], [56, 62],
-                            ].map(([lx, ly], idx) => (
-                              <circle key={idx} cx={lx} cy={ly} r="0.8" fill="#00F0FF" className="animate-pulse" />
-                            ))}
-
-                            {/* Bounding Box Reticle */}
-                            <rect x="28" y="18" width="44" height="54" fill="none" stroke="rgba(0, 240, 255, 0.4)" strokeWidth="0.4" strokeDasharray="3, 3" />
-                          </svg>
-
-                          <div className="absolute bottom-2 right-2 text-[7px] font-mono text-[#00F0FF] bg-[#07070B]/90 px-2 py-0.5 rounded border border-[#00F0FF]/30">
-                            CV2: 468 LANDMARKS // 99.8%
-                          </div>
-                        </div>
-                      )}
 
                       {/* =================================================== */}
                       {/* MODE 3: TACTICAL AR / IRON MAN OPTIC TRACKER        */}
@@ -760,7 +728,7 @@ export function Hero() {
         {/* Bottom Bar / Scroll Prompt */}
         <div
           ref={scrollIndicatorRef}
-          className="pt-6 border-t border-[rgba(242,240,234,0.06)] flex items-center justify-between text-xs font-mono tracking-[0.2em] text-[#8E8E8E] opacity-0"
+          className="pt-6 border-t border-[rgba(242,240,234,0.06)] flex items-center justify-between text-xs font-mono tracking-[0.2em] text-[#A8ABB8]"
         >
           <a
             href="#about"

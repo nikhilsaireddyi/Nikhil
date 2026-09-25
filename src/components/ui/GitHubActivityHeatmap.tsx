@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { GitCommit, GitPullRequest, GitBranch, Flame, Code2, Terminal, Calendar } from 'lucide-react';
+import { GitCommit, GitPullRequest, GitBranch, Flame, Code2, Terminal, Calendar, Layers, Sparkles } from 'lucide-react';
 import { playHoverTick } from '@/lib/sound';
 
 interface DayCell {
@@ -9,26 +9,104 @@ interface DayCell {
   count: number;
   level: number; // 0 to 4
   primaryRepo: string;
+  domain: 'aiml' | 'frontend' | 'mixed';
 }
 
-export function GitHubActivityHeatmap() {
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'aiml' | 'frontend'>('all');
-  const [hoveredCell, setHoveredCell] = useState<DayCell | null>(null);
+type CategoryKey = 'all' | 'aiml' | 'frontend';
 
-  // Generate deterministic pseudo-realistic 52 weeks of commit activity
-  const weeks = useMemo(() => {
-    const totalWeeks = 44; // Fits cleanly on desktop and scrolls gracefully on mobile
-    const daysPerWeek = 7;
-    const generated: DayCell[][] = [];
+interface CategoryConfig {
+  label: string;
+  badge: string;
+  title: string;
+  subtitle: string;
+  repos: string[];
+  repoCount: number;
+  streak: number;
+  dailyAvg: string;
+  languages: { name: string; pct: string; color: string; width: string }[];
+}
 
-    const repoPool = [
+const CATEGORY_CONFIGS: Record<CategoryKey, CategoryConfig> = {
+  all: {
+    label: 'ALL REPOS',
+    badge: '18 REPOSITORIES',
+    title: '44-WEEK CONTINUOUS REPOSITORY ACTIVITY',
+    subtitle: 'GLOBAL REPOSITORY AUDIT // ALL 18 TRACKED CODEBASES',
+    repos: [
       'automotive-telemetry-pipeline',
       'yolov8-vision-tracker',
       'gradient-descent-lab',
-      'astar-route-optimizer',
+      'ganesh-the-quest-engine',
       'portfolio-nextjs-v2',
       'neural-signal-processor',
-    ];
+    ],
+    repoCount: 18,
+    streak: 42,
+    dailyAvg: '4.2',
+    languages: [
+      { name: 'Python', pct: '46.4%', color: '#3572A5', width: '46.4%' },
+      { name: 'TypeScript', pct: '32.8%', color: '#3178C6', width: '32.8%' },
+      { name: 'React / Tailwind', pct: '12.2%', color: '#C7FF4A', width: '12.2%' },
+      { name: 'C++ / Shell', pct: '8.6%', color: '#E34C26', width: '8.6%' },
+    ],
+  },
+  aiml: {
+    label: 'AI / ML CORE',
+    badge: '11 REPOSITORIES',
+    title: 'AI & MACHINE LEARNING REPOSITORY ACTIVITY',
+    subtitle: 'COMPUTER VISION, NEURAL ARCHITECTURES & MATHEMATICAL MODELING',
+    repos: [
+      'yolov8-vision-tracker',
+      'gradient-descent-lab',
+      'neural-signal-processor',
+      'automotive-telemetry-pipeline',
+      'pytorch-model-zoo',
+    ],
+    repoCount: 11,
+    streak: 28,
+    dailyAvg: '2.6',
+    languages: [
+      { name: 'Python', pct: '74.2%', color: '#3572A5', width: '74.2%' },
+      { name: 'PyTorch / C++', pct: '14.8%', color: '#EE4C2C', width: '14.8%' },
+      { name: 'CUDA / Shell', pct: '6.5%', color: '#76B900', width: '6.5%' },
+      { name: 'Jupyter', pct: '4.5%', color: '#DA5B0B', width: '4.5%' },
+    ],
+  },
+  frontend: {
+    label: 'FRONTEND SYS',
+    badge: '7 REPOSITORIES',
+    title: 'FRONTEND & INTERFACE REPOSITORY ACTIVITY',
+    subtitle: 'REACT 19, CANVAS GAME ENGINES, TYPESCRIPT & KINETIC MOTION',
+    repos: [
+      'ganesh-the-quest-engine',
+      'portfolio-nextjs-v2',
+      'animejs-kinetic-components',
+      'canvas-shader-experiments',
+      'lenis-physics-lab',
+    ],
+    repoCount: 7,
+    streak: 34,
+    dailyAvg: '1.8',
+    languages: [
+      { name: 'TypeScript', pct: '58.6%', color: '#3178C6', width: '58.6%' },
+      { name: 'React 19', pct: '24.2%', color: '#00F0FF', width: '24.2%' },
+      { name: 'Tailwind CSS', pct: '11.4%', color: '#C7FF4A', width: '11.4%' },
+      { name: 'HTML5 Canvas', pct: '5.8%', color: '#FF8F00', width: '5.8%' },
+    ],
+  },
+};
+
+export function GitHubActivityHeatmap() {
+  const [selectedCategory, setSelectedCategory] = useState<CategoryKey>('all');
+  const [hoveredCell, setHoveredCell] = useState<DayCell | null>(null);
+
+  const currentConfig = CATEGORY_CONFIGS[selectedCategory];
+
+  // Dynamically generate 44 weeks of commit activity reacting to selectedCategory
+  const weeks = useMemo(() => {
+    const totalWeeks = 44;
+    const daysPerWeek = 7;
+    const generated: DayCell[][] = [];
 
     const today = new Date('2026-03-10');
 
@@ -39,54 +117,108 @@ export function GitHubActivityHeatmap() {
         const cellDate = new Date(today);
         cellDate.setDate(today.getDate() - dateOffset);
 
-        // Deterministic pseudo-randomness based on date timestamp
-        const seed = Math.sin(cellDate.getTime()) * 10000;
-        const rand = seed - Math.floor(seed);
+        // Deterministic pseudo-random seed based on day offset
+        const seed1 = Math.sin(dateOffset * 9301 + 49297) * 233280;
+        const rand = Math.abs(seed1 - Math.floor(seed1));
+
+        const isWeekend = d === 0 || d === 6;
+
+        // Determine which domain had commits on this day
+        // Day hash assigns ~60% AI/ML days and ~40% Frontend days, with overlap on peak sprints
+        const dayDomainHash = (dateOffset * 17) % 100;
+        const isAimlDay = dayDomainHash < 65;
+        const isFrontendDay = dayDomainHash > 35;
+
+        let dayActiveInFilter = false;
+        let domain: 'aiml' | 'frontend' | 'mixed' = 'aiml';
+
+        if (selectedCategory === 'all') {
+          dayActiveInFilter = true;
+          domain = isAimlDay && isFrontendDay ? 'mixed' : isAimlDay ? 'aiml' : 'frontend';
+        } else if (selectedCategory === 'aiml') {
+          dayActiveInFilter = isAimlDay;
+          domain = 'aiml';
+        } else {
+          dayActiveInFilter = isFrontendDay;
+          domain = 'frontend';
+        }
 
         let count = 0;
         let level = 0;
 
-        // Bias towards weekdays and high consistency
-        const isWeekend = d === 0 || d === 6;
-        const threshold = isWeekend ? 0.35 : 0.15;
-
-        if (rand > threshold) {
-          if (rand > 0.85) {
-            count = Math.floor(rand * 12) + 4;
-            level = 4;
-          } else if (rand > 0.65) {
-            count = Math.floor(rand * 6) + 3;
-            level = 3;
-          } else if (rand > 0.4) {
-            count = Math.floor(rand * 4) + 2;
-            level = 2;
-          } else {
-            count = 1;
-            level = 1;
+        if (dayActiveInFilter) {
+          const threshold = isWeekend ? 0.38 : 0.12;
+          if (rand > threshold) {
+            if (selectedCategory === 'all') {
+              if (rand > 0.85) {
+                count = Math.floor(rand * 10) + 5;
+                level = 4;
+              } else if (rand > 0.65) {
+                count = Math.floor(rand * 5) + 3;
+                level = 3;
+              } else if (rand > 0.38) {
+                count = Math.floor(rand * 3) + 2;
+                level = 2;
+              } else {
+                count = 1;
+                level = 1;
+              }
+            } else if (selectedCategory === 'aiml') {
+              if (rand > 0.82) {
+                count = Math.floor(rand * 8) + 4;
+                level = 4;
+              } else if (rand > 0.62) {
+                count = Math.floor(rand * 4) + 2;
+                level = 3;
+              } else if (rand > 0.35) {
+                count = 2;
+                level = 2;
+              } else {
+                count = 1;
+                level = 1;
+              }
+            } else {
+              // frontend
+              if (rand > 0.80) {
+                count = Math.floor(rand * 6) + 3;
+                level = 4;
+              } else if (rand > 0.58) {
+                count = Math.floor(rand * 3) + 2;
+                level = 3;
+              } else if (rand > 0.32) {
+                count = 2;
+                level = 2;
+              } else {
+                count = 1;
+                level = 1;
+              }
+            }
           }
         }
 
-        const repoIndex = Math.floor(rand * repoPool.length);
-        const primaryRepo = repoPool[repoIndex];
+        const pool = currentConfig.repos;
+        const repoIdx = Math.floor(rand * pool.length);
+        const primaryRepo = pool[repoIdx] || pool[0];
 
         weekDays.push({
           date: cellDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
           count,
           level,
           primaryRepo,
+          domain,
         });
       }
       generated.push(weekDays);
     }
     return generated;
-  }, []);
+  }, [selectedCategory, currentConfig.repos]);
 
   const totalCommits = useMemo(() => {
     return weeks.reduce((acc, week) => acc + week.reduce((wAcc, day) => wAcc + day.count, 0), 0);
   }, [weeks]);
 
   return (
-    <div className="mt-16 w-full border border-[rgba(242,240,234,0.12)] bg-[#0A0A0A] p-6 sm:p-8 relative overflow-hidden">
+    <div className="mt-16 w-full border border-[rgba(242,240,234,0.12)] bg-[#0A0A0A] p-6 sm:p-8 relative overflow-hidden rounded-xl">
       {/* Top Telemetry Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[rgba(242,240,234,0.08)] pb-6">
         <div>
@@ -95,41 +227,67 @@ export function GitHubActivityHeatmap() {
             <span>NEURAL CODE CONSISTENCY MATRIX</span>
             <span className="text-[#8E8E8E]">{'//'} GITHUB METRICS</span>
           </div>
-          <h4 className="text-lg sm:text-xl font-sans font-bold text-[#F2F0EA] mt-1">
-            44-WEEK CONTINUOUS REPOSITORY ACTIVITY
+          <h4 className="text-lg sm:text-xl font-sans font-bold text-[#F2F0EA] mt-1 transition-all">
+            {currentConfig.title}
           </h4>
+          <p className="text-xs font-mono text-[#A8ABB8] mt-1 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-pulse" />
+            <span>{currentConfig.subtitle}</span>
+          </p>
         </div>
 
-        {/* Filter Chips */}
-        <div className="flex items-center gap-2">
-          {(['all', 'aiml', 'frontend'] as const).map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => {
-                playHoverTick();
-                setSelectedCategory(cat);
-              }}
-              className={`px-3 py-1 text-[10px] font-mono tracking-widest uppercase transition-all rounded-sm border ${
-                selectedCategory === cat
-                  ? 'border-[#C7FF4A] bg-[#C7FF4A]/10 text-[#C7FF4A]'
-                  : 'border-[rgba(242,240,234,0.1)] text-[#8E8E8E] hover:text-[#F2F0EA]'
-              }`}
-            >
-              {cat === 'all' ? 'All Repos' : cat === 'aiml' ? 'AI / ML Core' : 'Frontend Sys'}
-            </button>
-          ))}
+        {/* Dynamic Filter Chips */}
+        <div className="flex items-center gap-2 bg-[#12141C] p-1.5 rounded-lg border border-[rgba(242,240,234,0.08)]">
+          {(['all', 'aiml', 'frontend'] as const).map((cat) => {
+            const cfg = CATEGORY_CONFIGS[cat];
+            const isActive = selectedCategory === cat;
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => {
+                  playHoverTick();
+                  setSelectedCategory(cat);
+                  setHoveredCell(null);
+                }}
+                className={`px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase transition-all rounded-md border flex items-center gap-1.5 ${
+                  isActive
+                    ? 'border-[#C7FF4A] bg-[#C7FF4A]/15 text-[#C7FF4A] font-bold shadow-[0_0_12px_rgba(199,255,74,0.3)]'
+                    : 'border-transparent text-[#8E8E8E] hover:text-[#F2F0EA] hover:bg-[#181B26]'
+                }`}
+              >
+                <span>{cfg.label}</span>
+                {isActive && <span className="text-[9px] opacity-75 font-normal">({cfg.repoCount})</span>}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Metrics Row */}
+      {/* Active Repos Scope Pill Strip */}
+      <div className="py-3 px-3.5 my-4 rounded-lg bg-[#0E1017] border border-[rgba(242,240,234,0.06)] flex flex-wrap items-center gap-2 text-[10px] font-mono">
+        <span className="text-[#8E8E8E] uppercase tracking-wider flex items-center gap-1">
+          <GitBranch size={11} className="text-[#00F0FF]" />
+          ACTIVE REPOSITORIES:
+        </span>
+        {currentConfig.repos.map((repo) => (
+          <span
+            key={repo}
+            className="px-2 py-0.5 rounded bg-[#161824] border border-[rgba(0,240,255,0.2)] text-[#00F0FF] font-medium"
+          >
+            {repo}
+          </span>
+        ))}
+      </div>
+
+      {/* Metrics Row - Dynamically Filtered */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-6 border-b border-[rgba(242,240,234,0.08)]">
         <div>
           <div className="text-[10px] font-mono text-[#8E8E8E] uppercase tracking-wider flex items-center gap-1.5 mb-1">
             <GitPullRequest size={12} className="text-[#C7FF4A]" />
             <span>ANNUAL COMMITS</span>
           </div>
-          <div className="text-xl sm:text-2xl font-mono font-bold text-[#F2F0EA]">
+          <div className="text-xl sm:text-2xl font-mono font-bold text-[#F2F0EA] transition-all">
             {totalCommits.toLocaleString()}
           </div>
         </div>
@@ -139,8 +297,8 @@ export function GitHubActivityHeatmap() {
             <Flame size={12} className="text-[#FF5555]" />
             <span>ACTIVE STREAK</span>
           </div>
-          <div className="text-xl sm:text-2xl font-mono font-bold text-[#F2F0EA]">
-            42 <span className="text-xs text-[#8E8E8E] font-normal">DAYS</span>
+          <div className="text-xl sm:text-2xl font-mono font-bold text-[#F2F0EA] transition-all">
+            {currentConfig.streak} <span className="text-xs text-[#8E8E8E] font-normal">DAYS</span>
           </div>
         </div>
 
@@ -149,8 +307,8 @@ export function GitHubActivityHeatmap() {
             <GitBranch size={12} className="text-[#00E5FF]" />
             <span>PUBLIC REPOSITORIES</span>
           </div>
-          <div className="text-xl sm:text-2xl font-mono font-bold text-[#F2F0EA]">
-            18 <span className="text-xs text-[#8E8E8E] font-normal">VERIFIED</span>
+          <div className="text-xl sm:text-2xl font-mono font-bold text-[#F2F0EA] transition-all">
+            {currentConfig.repoCount} <span className="text-xs text-[#8E8E8E] font-normal">VERIFIED</span>
           </div>
         </div>
 
@@ -159,8 +317,8 @@ export function GitHubActivityHeatmap() {
             <Calendar size={12} className="text-[#C7FF4A]" />
             <span>DAILY AVERAGE</span>
           </div>
-          <div className="text-xl sm:text-2xl font-mono font-bold text-[#F2F0EA]">
-            4.2 <span className="text-xs text-[#8E8E8E] font-normal">PUSHES</span>
+          <div className="text-xl sm:text-2xl font-mono font-bold text-[#F2F0EA] transition-all">
+            {currentConfig.dailyAvg} <span className="text-xs text-[#8E8E8E] font-normal">PUSHES</span>
           </div>
         </div>
       </div>
@@ -222,55 +380,46 @@ export function GitHubActivityHeatmap() {
               <span className="text-[#C7FF4A]">
                 {hoveredCell.date}:{' '}
                 <strong className="text-[#F2F0EA]">{hoveredCell.count} commits</strong> in{' '}
-                <span className="text-[#00E5FF]">{hoveredCell.primaryRepo}</span>
+                <span className="text-[#00E5FF] font-semibold">{hoveredCell.primaryRepo}</span>
               </span>
             ) : (
-              <span className="text-[#666666]">Hover over any matrix block to inspect telemetry</span>
+              <span className="text-[#888888]">Hover over any matrix block to inspect telemetry</span>
             )}
           </div>
         </div>
       </div>
 
-      {/* Language Composition Breakdown */}
+      {/* Language Composition Breakdown - Dynamically Filtered */}
       <div className="pt-6 border-t border-[rgba(242,240,234,0.08)]">
         <div className="flex items-center justify-between mb-3 text-[10px] font-mono uppercase tracking-widest text-[#8E8E8E]">
           <div className="flex items-center gap-1.5 text-[#C7FF4A]">
             <Code2 size={12} />
-            <span>PRIMARY SYNTAX ARCHITECTURE</span>
+            <span>PRIMARY SYNTAX ARCHITECTURE // {currentConfig.label}</span>
           </div>
           <span>100% REPOSITORY AUDITED</span>
         </div>
 
-        {/* Segmented Bar */}
-        <div className="h-2 w-full rounded-full overflow-hidden flex bg-[#151515] mb-3">
-          <div className="h-full bg-[#3572A5]" style={{ width: '46.4%' }} title="Python 46.4%" />
-          <div className="h-full bg-[#3178C6]" style={{ width: '32.8%' }} title="TypeScript 32.8%" />
-          <div className="h-full bg-[#C7FF4A]" style={{ width: '12.2%' }} title="React / Tailwind 12.2%" />
-          <div className="h-full bg-[#E34C26]" style={{ width: '8.6%' }} title="C++ / Shell 8.6%" />
+        {/* Dynamic Segmented Bar */}
+        <div className="h-2.5 w-full rounded-full overflow-hidden flex bg-[#151515] mb-3 transition-all">
+          {currentConfig.languages.map((lang) => (
+            <div
+              key={lang.name}
+              className="h-full transition-all duration-500"
+              style={{ width: lang.width, backgroundColor: lang.color }}
+              title={`${lang.name} ${lang.pct}`}
+            />
+          ))}
         </div>
 
-        {/* Legend */}
+        {/* Dynamic Legend */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#3572A5]" />
-            <span className="text-[#F2F0EA]">Python</span>
-            <span className="text-[#8E8E8E] text-[10px]">46.4%</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#3178C6]" />
-            <span className="text-[#F2F0EA]">TypeScript</span>
-            <span className="text-[#8E8E8E] text-[10px]">32.8%</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#C7FF4A]" />
-            <span className="text-[#F2F0EA]">React / Tailwind</span>
-            <span className="text-[#8E8E8E] text-[10px]">12.2%</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#E34C26]" />
-            <span className="text-[#F2F0EA]">C++ / Shell</span>
-            <span className="text-[#8E8E8E] text-[10px]">8.6%</span>
-          </div>
+          {currentConfig.languages.map((lang) => (
+            <div key={lang.name} className="flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: lang.color }} />
+              <span className="text-[#F2F0EA] truncate">{lang.name}</span>
+              <span className="text-[#8E8E8E] text-[10px]">{lang.pct}</span>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -278,7 +427,7 @@ export function GitHubActivityHeatmap() {
       <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-4 border-t border-[rgba(242,240,234,0.06)] text-[10px] font-mono text-[#666666]">
         <div className="flex items-center gap-2">
           <Terminal size={12} className="text-[#C7FF4A]" />
-          <span>ORIGIN: git@github.com:nikhilsaireddy/portfolio.git</span>
+          <span>ORIGIN: git@github.com:nikhilsaireddyi/portfolio.git</span>
         </div>
         <div>SHA-256 INTEGRITY: VERIFIED // ARCHIVAL STATUS: ONLINE</div>
       </div>

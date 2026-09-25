@@ -203,8 +203,8 @@ export function Toolkit() {
                           </div>
 
                           {/* Description & Technical Metadata */}
-                          <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-8 text-xs font-mono text-[#8E8E8E]">
-                            <p className="max-w-md font-sans text-xs sm:text-sm text-[#8E8E8E] group-hover:text-[#F2F0EA] transition-colors">
+                          <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-8 text-xs font-mono text-[#A0A0A0]">
+                            <p className="max-w-md font-sans text-xs sm:text-sm text-[#D4D2CC] group-hover:text-[#F2F0EA] transition-colors">
                               {skill.description}
                             </p>
 

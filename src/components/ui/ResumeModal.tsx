@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { X, Printer, Copy, Check, ExternalLink, GraduationCap, Code2, Briefcase } from 'lucide-react';
 import { playHoverTick, playSynapticPulse } from '@/lib/sound';
 
@@ -11,6 +11,7 @@ interface ResumeModalProps {
 
 export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
   const [copied, setCopied] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -28,23 +29,38 @@ export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
     };
   }, [isOpen, onClose]);
 
+  // Ensure trackpad two-finger and mouse wheel scrolling always scroll the modal container
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el || !isOpen) return;
+
+    const onWheel = (e: WheelEvent) => {
+      e.stopPropagation();
+      el.scrollTop += e.deltaY;
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      el.removeEventListener('wheel', onWheel);
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleCopy = () => {
     playHoverTick();
     const resumeText = `NIKHIL SAI REDDY — AI/ML & FRONTEND DEVELOPER
 Student @ Nxt Wave of Innovation in Advanced Technology, Visakhapatnam, India
-Email: nikhilsaireddy@gmail.com | Location: Vizag, India
+Email: nikhilsaireddyi@gmail.com | Location: Vizag, India
 
 CORE TECHNICAL EXPERTISE:
 • AI & Machine Learning: Python, PyTorch, YOLOv8, Computer Vision, Deep Learning, NumPy
 • Frontend Development: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS
 • Motion & Systems: Anime.js, WebGL/Canvas, Web Audio API, Lenis Scroll Physics
 
-SELECTED PROJECTS:
-1. Real-Time Automotive Telemetry Pipeline (Python, Next.js, WebSockets, Three.js)
-2. Neural Vision Inference HUD (YOLOv8, PyTorch, WebGL, Tailwind CSS)
-3. Eco-Route Topology Pathfinder (TypeScript, A* Algorithm, Next.js, Canvas)`;
+FEATURED PROJECTS:
+1. Ganesh: The Quest (HTML5 Canvas, TypeScript, Vite, Web Audio API, Parallax 2.5D)
+   https://ganesh-the-quest-game.vercel.app/`;
 
     navigator.clipboard.writeText(resumeText);
     setCopied(true);
@@ -57,8 +73,15 @@ SELECTED PROJECTS:
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200">
+    <div
+      data-lenis-prevent="true"
+      onWheel={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200"
+    >
       <div
+        data-lenis-prevent="true"
+        onWheel={(e) => e.stopPropagation()}
         className="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-2xl bg-[#090B10] border border-[rgba(0,240,255,0.3)] shadow-[0_20px_70px_rgba(0,0,0,0.9),0_0_40px_rgba(0,240,255,0.2)] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
@@ -103,7 +126,12 @@ SELECTED PROJECTS:
         </div>
 
         {/* Scrollable CV Document Body */}
-        <div className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-8 text-[#F2F0EA] font-sans">
+        <div
+          ref={scrollContainerRef}
+          data-lenis-prevent="true"
+          onWheel={(e) => e.stopPropagation()}
+          className="flex-1 overflow-y-auto overscroll-contain p-6 sm:p-10 space-y-8 text-[#F2F0EA] font-sans"
+        >
           {/* Identity Header */}
           <div className="border-b border-[rgba(242,240,234,0.1)] pb-6 flex flex-col sm:flex-row sm:items-baseline justify-between gap-4">
             <div>
@@ -117,7 +145,7 @@ SELECTED PROJECTS:
 
             <div className="text-xs font-mono text-[#8E8E8E] space-y-1 sm:text-right">
               <div>LOCATION: VISAKHAPATNAM, INDIA</div>
-              <div>EMAIL: nikhilsaireddy@gmail.com</div>
+              <div>EMAIL: nikhilsaireddyi@gmail.com</div>
               <div className="text-[#C7FF4A] font-bold">AVAILABLE FOR OPPORTUNITIES</div>
             </div>
           </div>
@@ -190,56 +218,31 @@ SELECTED PROJECTS:
               <span>FEATURED WORKSPACES & IMPLEMENTATIONS</span>
             </div>
             <div className="space-y-3">
-              <div className="p-4 rounded-xl bg-[#0E101A] border border-[rgba(242,240,234,0.08)]">
+              <div className="p-4 rounded-xl bg-[#0E101A] border border-[rgba(255,143,0,0.25)] hover:border-[#FF8F00]/50 transition-colors">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
-                  <h4 className="text-sm font-bold text-[#F2F0EA] uppercase">
-                    01. Real-Time Automotive Telemetry Pipeline
+                  <h4 className="text-sm font-bold text-[#F2F0EA] uppercase flex items-center gap-2">
+                    <span>01. Ganesh: The Quest</span>
+                    <a
+                      href="https://ganesh-the-quest-game.vercel.app/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#FF8F00] hover:text-[#FFA000] inline-flex items-center gap-1 text-[11px]"
+                    >
+                      <span>[LIVE DEMO]</span>
+                      <ExternalLink size={10} />
+                    </a>
                   </h4>
-                  <span className="text-[10px] font-mono text-[#00F0FF]">AI/ML & IOT STREAMS</span>
+                  <span className="text-[10px] font-mono text-[#FF8F00] font-bold">GAME ENGINE & WEB APP</span>
                 </div>
                 <p className="text-xs font-mono text-[#8E8E8E] leading-relaxed mb-2">
-                  High-frequency data ingestion pipeline parsing CAN bus telemetry and simulated vehicle performance indicators with real-time 3D dashboard visualizers.
+                  Cinematic 2D/2.5D Indian festival adventure game celebrating Ganesh Chaturthi with custom HTML5 Canvas physics, multi-layer parallax street exploration, procedural web audio synthesizer with temple bells and dhol beats, and an in-game scrapbook photo system.
                 </p>
-                <div className="flex flex-wrap gap-1.5 text-[9px] font-mono text-[#00F0FF]">
-                  <span className="px-2 py-0.5 rounded bg-white/5">Python</span>
-                  <span className="px-2 py-0.5 rounded bg-white/5">Next.js</span>
-                  <span className="px-2 py-0.5 rounded bg-white/5">WebSockets</span>
-                  <span className="px-2 py-0.5 rounded bg-white/5">Three.js</span>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-xl bg-[#0E101A] border border-[rgba(242,240,234,0.08)]">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
-                  <h4 className="text-sm font-bold text-[#F2F0EA] uppercase">
-                    02. Neural Vision Inference HUD
-                  </h4>
-                  <span className="text-[10px] font-mono text-[#FF007F]">COMPUTER VISION</span>
-                </div>
-                <p className="text-xs font-mono text-[#8E8E8E] leading-relaxed mb-2">
-                  Real-time optical object detection and tracking reticle overlay capable of bounding box classification, optical flow direction, and velocity tracking at 120 FPS.
-                </p>
-                <div className="flex flex-wrap gap-1.5 text-[9px] font-mono text-[#FF007F]">
-                  <span className="px-2 py-0.5 rounded bg-white/5">YOLOv8</span>
-                  <span className="px-2 py-0.5 rounded bg-white/5">PyTorch</span>
-                  <span className="px-2 py-0.5 rounded bg-white/5">WebGL</span>
-                  <span className="px-2 py-0.5 rounded bg-white/5">Tailwind CSS</span>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-xl bg-[#0E101A] border border-[rgba(242,240,234,0.08)]">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
-                  <h4 className="text-sm font-bold text-[#F2F0EA] uppercase">
-                    03. Eco-Route Topology Pathfinder
-                  </h4>
-                  <span className="text-[10px] font-mono text-[#C7FF4A]">GRAPH ALGORITHMS</span>
-                </div>
-                <p className="text-xs font-mono text-[#8E8E8E] leading-relaxed mb-2">
-                  Heuristic A* search algorithm computing minimum energy consumption routes across irregular urban grid topologies with dynamic barrier recalculation.
-                </p>
-                <div className="flex flex-wrap gap-1.5 text-[9px] font-mono text-[#C7FF4A]">
-                  <span className="px-2 py-0.5 rounded bg-white/5">TypeScript</span>
-                  <span className="px-2 py-0.5 rounded bg-white/5">A* Heuristic</span>
-                  <span className="px-2 py-0.5 rounded bg-white/5">Canvas 2D</span>
+                <div className="flex flex-wrap gap-1.5 text-[9px] font-mono text-[#FF8F00]">
+                  <span className="px-2 py-0.5 rounded bg-[#FF8F00]/10 border border-[#FF8F00]/30">HTML5 Canvas</span>
+                  <span className="px-2 py-0.5 rounded bg-[#FF8F00]/10 border border-[#FF8F00]/30">Vite</span>
+                  <span className="px-2 py-0.5 rounded bg-[#FF8F00]/10 border border-[#FF8F00]/30">TypeScript</span>
+                  <span className="px-2 py-0.5 rounded bg-[#FF8F00]/10 border border-[#FF8F00]/30">Web Audio API</span>
+                  <span className="px-2 py-0.5 rounded bg-[#FF8F00]/10 border border-[#FF8F00]/30">Parallax 2.5D</span>
                 </div>
               </div>
             </div>
@@ -250,7 +253,7 @@ SELECTED PROJECTS:
         <div className="px-6 py-4 border-t border-[rgba(242,240,234,0.1)] bg-[#0C0E17] flex items-center justify-between text-xs font-mono text-[#8E8E8E]">
           <span>VERIFIED PORTFOLIO DOSSIER</span>
           <a
-            href="mailto:nikhilsaireddy@gmail.com"
+            href="mailto:nikhilsaireddyi@gmail.com"
             className="text-[#00F0FF] hover:underline flex items-center gap-1 font-bold"
           >
             <span>DISPATCH INQUIRY</span>

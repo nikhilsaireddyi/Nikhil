@@ -16,7 +16,7 @@ export interface NavigationItem {
   readonly number: string;
 }
 
-export type SocialPlatform = 'github' | 'instagram' | 'linkedin';
+export type SocialPlatform = 'github' | 'instagram' | 'linkedin' | 'email';
 
 export interface SocialLink {
   readonly platform: SocialPlatform;

@@ -12,12 +12,12 @@ export function Manifesto() {
   return (
     <section
       id="manifesto"
-      className="relative w-full py-24 sm:py-32 md:py-44 border-b border-[rgba(242,240,234,0.06)] z-10"
+      className="relative w-full py-10 sm:py-12 md:py-14 border-b border-[rgba(242,240,234,0.06)] z-10"
       aria-label="Manifesto Statement"
     >
       <div className="mx-auto max-w-[1680px] px-6 sm:px-10 md:px-14 lg:px-16">
         {/* Editorial Eyebrow */}
-        <div className="mb-8 sm:mb-12 flex items-center justify-between">
+        <div className="mb-4 sm:mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2.5 text-xs font-mono tracking-[0.25em] text-[#C7FF4A]">
             <Terminal size={14} />
             <CyberScramble text="MANIFESTO // 00" />
@@ -36,8 +36,8 @@ export function Manifesto() {
                 key={index}
                 className={`manifesto-word inline-block opacity-100 ${
                   word === 'INTELLIGENT' || word === 'SYSTEMS' || word === 'EXPERIENCE'
-                    ? 'text-[#F2F0EA] border-b-2 border-[#C7FF4A]/40 pb-0.5'
-                    : 'text-[#8E8E8E]'
+                    ? 'text-[#F2F0EA] border-b-2 border-[#C7FF4A]/50 pb-0.5 font-black'
+                    : 'text-[#E2E0D8]'
                 }`}
               >
                 {word}
@@ -47,7 +47,7 @@ export function Manifesto() {
         </div>
 
         {/* Conceptual Hierarchy Flow */}
-        <div className="mt-16 sm:mt-24 pt-8 border-t border-[rgba(242,240,234,0.08)] flex flex-wrap items-center justify-between gap-6 text-[10px] sm:text-xs font-mono tracking-[0.2em] text-[#8E8E8E]">
+        <div className="mt-6 sm:mt-8 pt-5 border-t border-[rgba(242,240,234,0.08)] flex flex-wrap items-center justify-between gap-6 text-[10px] sm:text-xs font-mono tracking-[0.2em] text-[#8E8E8E]">
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[#F2F0EA]">
             {['HUMAN', 'CURIOSITY', 'CODE', 'INTELLIGENCE'].map((step) => (
               <React.Fragment key={step}>

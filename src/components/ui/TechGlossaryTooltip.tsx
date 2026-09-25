@@ -86,18 +86,36 @@ export const GLOSSARY_DICTIONARY: Record<string, GlossaryEntry> = {
     implementation: 'Renders the 3D Cyber Supra 911 wireframe chassis and roadway vectors on canvas.',
     accentColor: '#C7FF4A',
   },
+  'html5 canvas': {
+    term: 'HTML5 Canvas',
+    category: 'GRAPHICS ENGINE',
+    formula: 'CanvasRenderingContext2D @ 60 FPS',
+    definition: 'Hardware-accelerated bitmapped drawing surface for rendering high-performance 2D/2.5D game physics, sprites, and particle effects directly in the browser.',
+    implementation: 'Drives custom rendering loops, parallax backgrounds, and collision systems in Ganesh: The Quest.',
+    accentColor: '#FF8F00',
+  },
+  'web audio api': {
+    term: 'Web Audio API',
+    category: 'AUDIO SYNTHESIS',
+    formula: 'AudioContext + OscillatorNode + BiquadFilter',
+    definition: 'High-level JavaScript API for processing, synthesizing, and spatializing audio sources in web applications with sample-accurate scheduling.',
+    implementation: 'Powers procedural festival beats, dhol percussion, and interactive temple bell acoustics in Ganesh: The Quest.',
+    accentColor: '#FFD700',
+  },
 };
 
 interface TechGlossaryTooltipProps {
   termKey: string;
   children?: React.ReactNode;
   className?: string;
+  underline?: boolean;
 }
 
 export const TechGlossaryTooltip = memo(function TechGlossaryTooltip({
   termKey,
   children,
   className = '',
+  underline = false,
 }: TechGlossaryTooltipProps) {
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLSpanElement>(null);
@@ -164,9 +182,9 @@ export const TechGlossaryTooltip = memo(function TechGlossaryTooltip({
             setIsOpen((prev) => !prev);
           }
         }}
-        className={`cursor-help border-b border-dotted transition-all duration-200 ${className}`}
+        className={`cursor-help transition-all duration-200 ${underline ? 'border-b border-dotted' : ''} ${className}`}
         style={{
-          borderColor: `${accentColor}80`,
+          borderColor: underline ? `${accentColor}80` : undefined,
           color: isOpen ? accentColor : undefined,
         }}
         aria-label={`${entry.term}: ${entry.definition}`}

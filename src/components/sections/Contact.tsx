@@ -6,7 +6,7 @@ import { socialLinks } from '@/data/socials';
 import { SocialLink } from '@/types';
 import { useCursorHover } from '@/hooks/useCursorHover';
 import { Magnetic } from '@/components/ui/Magnetic';
-import { ArrowUpRight, Send, CheckCircle2, ShieldCheck, Radio } from 'lucide-react';
+import { ArrowUpRight, Send, CheckCircle2, ShieldCheck, Radio, Mail, Copy, Check } from 'lucide-react';
 import { playHoverTick, playTransmissionSound } from '@/lib/sound';
 
 export function Contact() {
@@ -16,6 +16,14 @@ export function Contact() {
   const [missionType, setMissionType] = useState('AI/ML');
   const [payloadText, setPayloadText] = useState('');
   const [transmissionState, setTransmissionState] = useState<'idle' | 'encrypting' | 'dispatched'>('idle');
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText('nikhilsaireddyi@gmail.com');
+    setCopiedEmail(true);
+    playHoverTick();
+    setTimeout(() => setCopiedEmail(false), 2000);
+  };
 
   const handleDispatch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +37,7 @@ export function Contact() {
       // Create mailto fallback
       const subject = encodeURIComponent(`[TRANSMISSION: ${missionType}] from ${senderName || 'Anonymous'}`);
       const body = encodeURIComponent(`SENDER: ${senderName}\nCONTACT: ${senderEmail}\nOBJECTIVE: ${missionType}\n\nPAYLOAD:\n${payloadText}`);
-      window.location.href = `mailto:nikhilsaireddy@gmail.com?subject=${subject}&body=${body}`;
+      window.location.href = `mailto:nikhilsaireddyi@gmail.com?subject=${subject}&body=${body}`;
     }, 1200);
   };
 
@@ -187,6 +195,18 @@ export function Contact() {
                       </>
                     )}
                   </button>
+
+                  {/* Fast-track direct email option */}
+                  <div className="pt-2 border-t border-[rgba(242,240,234,0.06)]">
+                    <a
+                      href="mailto:nikhilsaireddyi@gmail.com?subject=Direct%20Inquiry%20via%20Portfolio&body=Hi%20Nikhil,"
+                      className="w-full py-2.5 px-3 rounded-lg border border-[rgba(0,240,255,0.25)] bg-[#00F0FF]/5 hover:bg-[#00F0FF]/15 text-[#00F0FF] font-mono text-[11px] font-semibold tracking-wider flex items-center justify-center gap-2 transition-all hover:border-[#00F0FF] group"
+                    >
+                      <Mail size={13} className="transition-transform group-hover:scale-110" />
+                      <span>FAST-TRACK: OPEN IN EMAIL CLIENT</span>
+                      <ArrowUpRight size={13} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </a>
+                  </div>
                 </form>
               )}
 
@@ -199,8 +219,77 @@ export function Contact() {
             </div>
           </div>
 
-          {/* Right Column: Editorial Social Links List */}
-          <div className="lg:col-span-6 border-t border-[rgba(242,240,234,0.1)]">
+          {/* Right Column: Direct Email Console & Editorial Links List */}
+          <div className="lg:col-span-6 space-y-8">
+            {/* Featured Direct Send a Mail Card */}
+            <div className="p-6 rounded-2xl bg-[#090B12]/90 border border-[rgba(0,240,255,0.3)] shadow-[0_0_30px_rgba(0,240,255,0.12)] backdrop-blur-2xl relative overflow-hidden group">
+              {/* Ambient accent glow */}
+              <div className="absolute -top-10 -right-10 w-36 h-36 bg-[#00F0FF]/10 blur-3xl pointer-events-none" />
+              <div className="absolute top-0 right-0 border-t-2 border-r-2 border-[#00F0FF]/60 w-3 h-3" />
+              <div className="absolute bottom-0 left-0 border-b-2 border-l-2 border-[#00F0FF]/60 w-3 h-3" />
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[rgba(242,240,234,0.08)] relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#00F0FF]/10 border border-[#00F0FF]/40 flex items-center justify-center text-[#00F0FF] shadow-[0_0_15px_rgba(0,240,255,0.25)]">
+                    <Mail size={18} />
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-mono tracking-widest text-[#00F0FF] uppercase flex items-center gap-1.5 font-bold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#C7FF4A] animate-pulse" />
+                      DIRECT MAIL CHANNEL
+                    </div>
+                    <h4 className="text-xl font-sans font-bold text-[#F2F0EA] tracking-tight">
+                      SEND A MAIL
+                    </h4>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#8E8E8E] bg-[#12141C] px-3 py-1.5 rounded-md border border-[rgba(242,240,234,0.08)] self-start sm:self-auto">
+                  <span className="text-[#555]">SLA:</span>
+                  <span className="text-[#C7FF4A] font-semibold">&lt; 24H RESPONSE</span>
+                </div>
+              </div>
+
+              <div className="mt-5 space-y-3 relative z-10">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[#12141C] p-3 sm:p-4 rounded-xl border border-[rgba(242,240,234,0.08)]">
+                  <div className="flex items-center gap-2 font-mono text-sm text-[#F2F0EA] truncate">
+                    <span className="text-[#555] select-none">&gt;</span>
+                    <span className="font-semibold select-all text-[#00F0FF] sm:text-[#F2F0EA]">nikhilsaireddyi@gmail.com</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={handleCopyEmail}
+                      className="flex-1 sm:flex-none px-3.5 py-2 rounded-lg bg-[#181B26] hover:bg-[#202534] border border-[rgba(242,240,234,0.12)] hover:border-[#00F0FF]/50 text-xs font-mono text-[#F2F0EA] flex items-center justify-center gap-1.5 transition-all"
+                      title="Copy email address"
+                    >
+                      {copiedEmail ? (
+                        <>
+                          <Check size={13} className="text-[#C7FF4A]" />
+                          <span className="text-[#C7FF4A] font-bold">COPIED</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={13} className="text-[#8E8E8E]" />
+                          <span>COPY</span>
+                        </>
+                      )}
+                    </button>
+
+                    <a
+                      href="mailto:nikhilsaireddyi@gmail.com?subject=Hello%20Nikhil&body=Hi%20Nikhil,"
+                      className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-gradient-to-r from-[#00F0FF] to-[#00A8FF] hover:from-[#00D0DF] hover:to-[#0090DF] text-[#07070B] text-xs font-mono font-bold flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(0,240,255,0.4)] hover:shadow-[0_0_25px_rgba(0,240,255,0.6)] transition-all"
+                    >
+                      <span>SEND MAIL</span>
+                      <ArrowUpRight size={14} />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Editorial Social Links List */}
+            <div className="border-t border-[rgba(242,240,234,0.1)]">
             <div className="divide-y divide-[rgba(242,240,234,0.08)]">
               {socialLinks.map((social: SocialLink) => (
                 <Magnetic key={social.platform} maxDistance={10} className="w-full">
@@ -240,7 +329,8 @@ export function Contact() {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </div>
+  </section>
+);
 }
 

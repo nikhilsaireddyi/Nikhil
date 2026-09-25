@@ -49,7 +49,7 @@ export const RoleCycler = memo(function RoleCycler({
       aria-label={`${prefix} ${roles[currentRoleIndex]}`}
       className={`inline-flex items-center gap-1 font-mono tracking-wider select-none ${className}`}
     >
-      {prefix && <span className="text-[#8E8E8E] mr-1">{prefix}</span>}
+      {prefix && <span className="text-[#00F0FF] font-semibold mr-1">{prefix}</span>}
       <span
         className="bg-clip-text text-transparent font-bold transition-opacity duration-500"
         style={{

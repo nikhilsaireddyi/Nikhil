@@ -5,7 +5,7 @@ import { SectionHeader } from '@/components/ui/SectionHeader';
 import { projectsData } from '@/data/projects';
 import { Project } from '@/types';
 import { useCursorHover } from '@/hooks/useCursorHover';
-import { CornerDownRight, Activity, Eye, Compass, ShieldAlert } from 'lucide-react';
+import { CornerDownRight, Activity, Eye, Compass, ShieldAlert, Gamepad2, ExternalLink } from 'lucide-react';
 import { playHoverTick, playSynapticPulse } from '@/lib/sound';
 import { ProjectSimulations } from '@/components/ui/ProjectSimulations';
 import { CyberScramble } from '@/components/ui/CyberScramble';
@@ -13,28 +13,12 @@ import { TechGlossaryTooltip } from '@/components/ui/TechGlossaryTooltip';
 
 const PROJECT_THEMES = [
   {
-    primary: '#00F0FF',
-    secondary: '#FFB703',
-    glow: 'rgba(0, 240, 255, 0.25)',
-    border: 'border-[#00F0FF]/50',
-    icon: Activity,
-    statusTag: 'TELEMETRY PIPELINE ONLINE',
-  },
-  {
-    primary: '#FF007F',
-    secondary: '#7928CA',
-    glow: 'rgba(255, 0, 127, 0.25)',
-    border: 'border-[#FF007F]/50',
-    icon: Eye,
-    statusTag: 'NEURAL VISION INFERENCE',
-  },
-  {
-    primary: '#C7FF4A',
-    secondary: '#00DF81',
-    glow: 'rgba(199, 255, 74, 0.25)',
-    border: 'border-[#C7FF4A]/50',
-    icon: Compass,
-    statusTag: 'ECO-ROUTE ALGORITHM READY',
+    primary: '#FF8F00',
+    secondary: '#FFD700',
+    glow: 'rgba(255, 143, 0, 0.28)',
+    border: 'border-[#FF8F00]/50',
+    icon: Gamepad2,
+    statusTag: 'CANVAS 2.5D GAME ENGINE ONLINE',
   },
 ];
 
@@ -160,14 +144,14 @@ export function Projects() {
             {/* Left: Project Metadata & Copy */}
             <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
               <div>
-                <div className="flex items-center gap-3 text-xs font-mono text-[#8E8E8E] mb-3">
+                <div className="flex items-center gap-3 text-xs font-mono text-[#A8ABB8] mb-3">
                   <span style={{ color: activeTheme.primary }} className="font-bold">
                     {activeProject.category}
                   </span>
                   <span>{'//'}</span>
                   <span>YEAR: {activeProject.year}</span>
                   <span>{'//'}</span>
-                  <span className="uppercase text-[#8E8E8E]">STATUS: {activeProject.status}</span>
+                  <span className="uppercase text-[#A8ABB8]">STATUS: {activeProject.status}</span>
                 </div>
 
                 <h3 className="text-3xl sm:text-5xl md:text-6xl font-sans font-black uppercase text-[#F2F0EA] tracking-tight leading-[0.95] group-hover:translate-x-1 transition-transform duration-300">
@@ -175,13 +159,16 @@ export function Projects() {
                 </h3>
               </div>
 
-              <p className="text-sm sm:text-base font-sans font-light text-[#8E8E8E] leading-relaxed max-w-xl">
+              <p
+                style={{ color: '#F2F0EA' }}
+                className="text-sm sm:text-base font-sans font-medium text-[#F2F0EA] leading-relaxed max-w-xl"
+              >
                 {activeProject.description}
               </p>
 
               {/* Technologies List with Vibrant Chips */}
               <div className="pt-6 border-t border-[rgba(242,240,234,0.08)]">
-                <div className="text-[10px] font-mono text-[#555555] tracking-widest mb-3 uppercase">
+                <div className="text-[10px] font-mono text-[#8E92A4] tracking-widest mb-3 uppercase">
                   STACK ARCHITECTURE
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -202,10 +189,30 @@ export function Projects() {
                 </div>
               </div>
 
-              {/* Data Model Note */}
-              <div className="flex items-center gap-2 text-xs font-mono text-[#8E8E8E]">
-                <CornerDownRight size={14} style={{ color: activeTheme.primary }} />
-                <span>DATA MODEL RIGIDLY CONFIGURED FOR PRODUCTION BUILDS</span>
+              {/* Action Buttons & Deployment Links */}
+              <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-[rgba(242,240,234,0.06)]">
+                <div className="flex items-center gap-2 text-xs font-mono text-[#A8ABB8]">
+                  <CornerDownRight size={14} style={{ color: activeTheme.primary }} />
+                  <span>DATA MODEL RIGIDLY CONFIGURED FOR PRODUCTION BUILDS</span>
+                </div>
+
+                {activeProject.href && (
+                  <a
+                    href={activeProject.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => playSynapticPulse()}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all duration-300 hover:scale-[1.04] shadow-lg group/btn cursor-pointer"
+                    style={{
+                      backgroundColor: activeTheme.primary,
+                      color: '#07080B',
+                      boxShadow: `0 0 20px ${activeTheme.glow}`,
+                    }}
+                  >
+                    <span>LAUNCH LIVE PROJECT</span>
+                    <ExternalLink size={13} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                  </a>
+                )}
               </div>
             </div>
 

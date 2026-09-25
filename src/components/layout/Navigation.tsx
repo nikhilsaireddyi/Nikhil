@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { navigationItems } from '@/data/navigation';
 import { siteConfig } from '@/data/site';
 import { StatusIndicator } from '@/components/ui/StatusIndicator';
@@ -41,34 +41,54 @@ export function Navigation() {
     return () => window.removeEventListener('set-portfolio-theme', handleTheme);
   }, []);
 
+  const sectionIds = useMemo(() => ['hero', 'about', 'toolkit', 'journey', 'projects', 'lab', 'contact'], []);
+
+  const updateActiveSection = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    const scrollPosition = window.scrollY + 220; // clearance offset
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    // Activate contact when near bottom of page
+    if (window.scrollY + windowHeight >= documentHeight - 100) {
+      setActiveSection('contact');
+      return;
+    }
+
+    for (let i = sectionIds.length - 1; i >= 0; i--) {
+      const id = sectionIds[i];
+      const el = document.getElementById(id);
+      if (el) {
+        const top = el.offsetTop;
+        if (scrollPosition >= top) {
+          setActiveSection(id);
+          return;
+        }
+      }
+    }
+    setActiveSection('hero');
+  }, [sectionIds]);
+
   useLenisScroll(
     useCallback((payload: ScrollPayload) => {
       setIsScrolled(payload.scroll > 50);
-    }, [])
+      updateActiveSection();
+    }, [updateActiveSection])
   );
 
   const brandCursor = useCursorHover('link');
   const navItemCursor = useCursorHover('link');
 
-  // Track active section via IntersectionObserver
+  // Fallback native scroll listener and initial position check
   useEffect(() => {
-    const sections = document.querySelectorAll('section[id]');
-    if (!sections.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      { threshold: 0.25, rootMargin: '-10% 0px -40% 0px' }
-    );
-
-    sections.forEach((sec) => observer.observe(sec));
-    return () => observer.disconnect();
-  }, []);
+    updateActiveSection();
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    window.addEventListener('resize', updateActiveSection, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', updateActiveSection);
+      window.removeEventListener('resize', updateActiveSection);
+    };
+  }, [updateActiveSection]);
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -81,6 +101,8 @@ export function Navigation() {
 
   const handleNavClick = (href: string) => {
     setMobileMenuOpen(false);
+    const sectionId = href.replace('#', '');
+    setActiveSection(sectionId);
     const target = document.querySelector(href);
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
@@ -92,8 +114,8 @@ export function Navigation() {
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           isScrolled
-            ? 'bg-[rgba(7,7,7,0.85)] backdrop-blur-xl border-b border-[rgba(242,240,234,0.06)] py-4'
-            : 'bg-transparent py-6 md:py-8'
+            ? 'bg-[#07070B]/95 backdrop-blur-2xl border-b border-[rgba(242,240,234,0.12)] py-3.5 shadow-[0_4px_30px_rgba(0,0,0,0.8)]'
+            : 'bg-[#07070B]/80 backdrop-blur-xl border-b border-[rgba(242,240,234,0.06)] py-4 sm:py-5 shadow-lg'
         }`}
       >
         <div className="mx-auto flex max-w-[1680px] items-center justify-between px-6 sm:px-10 md:px-14 lg:px-16">
@@ -108,10 +130,10 @@ export function Navigation() {
               }}
               className="group flex flex-col focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C7FF4A]"
             >
-              <span className="text-sm sm:text-base font-sans font-bold tracking-tight text-[#F2F0EA] uppercase group-hover:text-[#C7FF4A] transition-colors duration-200">
+              <span className="text-base sm:text-lg font-sans font-extrabold tracking-tight text-white uppercase group-hover:text-[#C7FF4A] transition-colors duration-200">
                 <CyberScramble text={siteConfig.name} scrambleOnHover={true} />
               </span>
-              <span className="text-[9px] font-mono tracking-[0.2em] text-[#8E8E8E] uppercase">
+              <span className="text-[10px] font-mono tracking-[0.2em] text-[#00F0FF] uppercase font-semibold">
                 CSE AI/ML // VIZAG
               </span>
             </a>
@@ -134,11 +156,11 @@ export function Navigation() {
                       e.preventDefault();
                       handleNavClick(item.href);
                     }}
-                    className="group relative flex items-center gap-1.5 py-1 text-xs font-mono tracking-[0.18em] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C7FF4A]"
+                    className="group relative flex items-center gap-1.5 py-1 text-xs font-mono tracking-[0.16em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C7FF4A]"
                   >
                     <span
-                      className={`text-[9px] transition-colors ${
-                        isActive ? 'text-[#C7FF4A]' : 'text-[#555555] group-hover:text-[#8E8E8E]'
+                      className={`text-[10px] font-mono font-bold transition-colors ${
+                        isActive ? 'text-[#C7FF4A]' : 'text-[#8E92A4] group-hover:text-[#00F0FF]'
                       }`}
                     >
                       {item.number}
@@ -146,14 +168,14 @@ export function Navigation() {
                     <span
                       className={`transition-colors ${
                         isActive
-                          ? 'text-[#F2F0EA] font-semibold'
-                          : 'text-[#8E8E8E] group-hover:text-[#F2F0EA]'
+                          ? 'text-white font-bold'
+                          : 'text-[#E2E4EC] font-medium group-hover:text-white'
                       }`}
                     >
                       <CyberScramble text={item.label} scrambleOnHover={true} />
                     </span>
                     {isActive && (
-                      <span className="absolute -bottom-1 left-0 right-0 h-[1.5px] bg-[#C7FF4A]" />
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2px] bg-[#C7FF4A] shadow-[0_0_10px_#C7FF4A] rounded-full" />
                     )}
                   </a>
                 </Magnetic>

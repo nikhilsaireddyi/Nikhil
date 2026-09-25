@@ -157,9 +157,14 @@
   --tw-ring-color: var(--theme-accent) !important;
 }
 
-[data-theme] ::selection {
+[data-theme] *::selection,
+[data-theme] *::-moz-selection,
+[data-theme] ::selection,
+[data-theme] ::-moz-selection {
   background-color: var(--theme-accent) !important;
-  color: #07070B !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  text-shadow: none !important;
 }
 
 [data-theme] [class*="shadow-[0_0_15px_rgba(199,255,74"] {
@@ -207,10 +212,15 @@ body {
   min-height: 100vh;
 }
 
-/* Custom Colorful Text Selection */
-::selection {
-  background-color: var(--theme-accent, #C7FF4A);
-  color: #07070B;
+/* Custom High-Contrast Text Selection */
+*::selection,
+*::-moz-selection,
+::selection,
+::-moz-selection {
+  background-color: var(--theme-accent, #C7FF4A) !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  text-shadow: none !important;
 }
 
 /* Modern Colorful Minimal Scrollbar */

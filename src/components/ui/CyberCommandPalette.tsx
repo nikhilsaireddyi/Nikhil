@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Terminal, X, CornerDownLeft, Sparkles, ShieldAlert, Cpu } from 'lucide-react';
+import { X, CornerDownLeft, Sparkles, ShieldAlert, Cpu } from 'lucide-react';
 import { playKeyClick, playSynapticPulse, playOverclockSurge } from '@/lib/sound';
 import { applyTheme, CyberTheme } from '@/components/ui/ThemeSwitcher';
 
@@ -198,6 +198,7 @@ export function CyberCommandPalette() {
               <div>3. <span className="text-[#F2F0EA] font-bold">Neural Digit Classifier</span> — In-browser deep learning forward pass inference pad.</div>
               <div>4. <span className="text-[#F2F0EA] font-bold">Wind Tunnel Dyno & Livery Spec</span> — Reynolds airflow simulation with audio dyno synthesizer.</div>
               <div>5. <span className="text-[#F2F0EA] font-bold">Geospatial Orbit Node</span> — Global orbital telemetry routing from Visakhapatnam base.</div>
+              <div>6. <span className="text-[#FF8F00] font-bold">Ganesh: The Quest</span> — 2D/2.5D festival adventure canvas game engine (Team VIBEX).</div>
             </div>
           </div>
         );
@@ -348,30 +349,21 @@ export function CyberCommandPalette() {
 
   return (
     <>
-      {/* Quick Launch Trigger Button (Desktop & Mobile Nav) */}
-      <button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[rgba(242,240,234,0.12)] bg-[#11131C]/80 hover:bg-[#181B26] hover:border-[#00F0FF] transition-all text-xs font-mono text-[#8E8E8E] hover:text-[#F2F0EA] group shadow-sm"
-        title="Open Cyber Terminal Shell (Cmd + K)"
-      >
-        <Terminal size={13} className="text-[#00F0FF] group-hover:animate-pulse" />
-        <span className="font-bold text-[11px] text-[#F2F0EA]">CLI SHELL</span>
-        <span className="px-1.5 py-0.2 text-[9px] font-bold rounded bg-[#0A0B10] border border-[rgba(242,240,234,0.1)] text-[#C7FF4A]">
-          ⌘K
-        </span>
-      </button>
-
       {/* Cyberpunk Modal Overlay */}
       {isOpen && (
         <div
           role="dialog"
           aria-modal="true"
           aria-label="Cyber Terminal Shell"
+          data-lenis-prevent="true"
+          onWheel={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
           className="fixed inset-0 z-[999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-150"
           onClick={() => setIsOpen(false)}
         >
           <div
+            data-lenis-prevent="true"
+            onWheel={(e) => e.stopPropagation()}
             className="w-full max-w-3xl bg-[#08090F] border border-[#00F0FF]/40 rounded-2xl shadow-[0_0_50px_rgba(0,240,255,0.25)] flex flex-col overflow-hidden max-h-[85vh] relative"
             onClick={(e) => e.stopPropagation()}
           >
@@ -429,7 +421,11 @@ export function CyberCommandPalette() {
             </div>
 
             {/* Terminal Body Screen */}
-            <div className="p-4 sm:p-5 overflow-y-auto space-y-4 font-mono text-xs text-[#F2F0EA] flex-1 min-h-[280px]">
+            <div
+              data-lenis-prevent="true"
+              onWheel={(e) => e.stopPropagation()}
+              className="p-4 sm:p-5 overflow-y-auto overscroll-contain space-y-4 font-mono text-xs text-[#F2F0EA] flex-1 min-h-[280px]"
+            >
               {/* ASCII Banner */}
               <pre className="text-[9px] sm:text-[10px] text-[#00F0FF] leading-tight select-none opacity-90">
                 {WELCOME_BANNER}
